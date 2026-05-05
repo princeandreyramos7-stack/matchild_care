@@ -1,5 +1,6 @@
-import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import { Head, useForm } from '@inertiajs/react';
+import AdminLayout from '@/Layouts/AdminLayout';
+import HealthWorkerLayout from '@/Layouts/HealthWorkerLayout';
+import { Head, useForm, usePage } from '@inertiajs/react';
 import { useState, useEffect } from 'react';
 import Stepper from '@/Components/Stepper';
 import FormNavigation from '@/Components/FormNavigation';
@@ -11,8 +12,12 @@ import SupplementationScreeningStep from '@/Components/MaternalCare/Supplementat
 import DeliveryPostnatalStep from '@/Components/MaternalCare/DeliveryPostnatalStep';
 
 export default function MaternalCare() {
+    const { auth } = usePage().props;
     const [currentStep, setCurrentStep] = useState(1);
     const totalSteps = 6;
+    
+    // Determine which layout to use based on user role
+    const Layout = auth.user.roles.includes('admin') ? AdminLayout : HealthWorkerLayout;
 
     const { data, setData, post, processing, errors, reset } = useForm({
         // Step 1: Basic Information
@@ -223,7 +228,7 @@ export default function MaternalCare() {
     ];
 
     return (
-        <AuthenticatedLayout
+        <Layout
             header={
                 <h2 className="text-xl font-semibold leading-tight text-gray-800">
                     Maternal Care Registration
@@ -311,6 +316,6 @@ export default function MaternalCare() {
                     </div>
                 </div>
             </div>
-        </AuthenticatedLayout>
+        </Layout>
     );
 }

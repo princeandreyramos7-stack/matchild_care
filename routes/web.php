@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\MaternalCareController;
+use App\Http\Controllers\PatientController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -16,6 +17,11 @@ Route::get('/', function () {
 });
 
 Route::get('/dashboard', function () {
+    // Check user role and redirect accordingly
+    if (auth()->user()->hasRole('patient')) {
+        return redirect()->route('patient.dashboard');
+    }
+    
     $stats = [
         'total_records' => \App\Models\MaternalRecord::count(),
         'active_pregnancies' => \App\Models\MaternalRecord::whereNull('deleted_at')
@@ -43,10 +49,18 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
     
-    // Parent Services Routes
-    Route::prefix('parent')->name('parent.')->group(function () {
-        Route::get('/maternal-care', [MaternalCareController::class, 'index'])->name('maternal-care');
-        Route::post('/maternal-care', [MaternalCareController::class, 'store'])->name('maternal-care.store');
+    // Patient Routes
+    Route::middleware('role:patient')->prefix('patient')->name('patient.')->group(function () {
+        Route::get('/dashboard', [PatientController::class, 'dashboard'])->name('dashboard');
+        Route::get('/my-records', [PatientController::class, 'myRecords'])->name('my-records');
+    });
+    
+    // Health Worker & Admin Routes
+    Route::middleware('role:health_worker,admin')->group(function () {
+        Route::prefix('parent')->name('parent.')->group(function () {
+            Route::get('/maternal-care', [MaternalCareController::class, 'index'])->name('maternal-care');
+            Route::post('/maternal-care', [MaternalCareController::class, 'store'])->name('maternal-care.store');
+        });
     });
 });
 
