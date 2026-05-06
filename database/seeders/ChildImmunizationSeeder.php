@@ -7,6 +7,7 @@ use App\Models\Child;
 use App\Models\MaternalRecord;
 use App\Models\ChildImmunization;
 use Illuminate\Support\Str;
+use Carbon\Carbon;
 
 class ChildImmunizationSeeder extends Seeder
 {
@@ -35,6 +36,8 @@ class ChildImmunizationSeeder extends Seeder
                     'address' => $maternal->address,
                 ]);
 
+                $dob = Carbon::parse($child->date_of_birth);
+
                 $fic = fake()->boolean(60);
                 $cic = fake()->boolean(40);
 
@@ -45,38 +48,72 @@ class ChildImmunizationSeeder extends Seeder
                     'protected_at_birth_tt3_tt5' => fake()->boolean(50),
 
                     'bcg_0_28_days' => fake()->boolean(70)
-                        ? $child->date_of_birth->copy()->addDays(rand(0, 28))->toDateString()
+                        ? $dob->copy()->addDays(rand(0, 28))->toDateString()
                         : null,
 
                     'bcg_29_days_to_1_year' => fake()->boolean(30)
-                        ? $child->date_of_birth->copy()->addDays(rand(29, 365))->toDateString()
+                        ? $dob->copy()->addDays(rand(29, 365))->toDateString()
                         : null,
 
                     'hepa_b_within_24_hours' => fake()->boolean(70)
-                        ? $child->date_of_birth->copy()->addHours(rand(1, 24))->toDateString()
+                        ? $dob->copy()->addHours(rand(1, 24))->toDateString()
                         : null,
 
                     'hepa_b_more_than_24_hours' => fake()->boolean(30)
-                        ? $child->date_of_birth->copy()->addDays(rand(2, 30))->toDateString()
+                        ? $dob->copy()->addDays(rand(2, 30))->toDateString()
                         : null,
 
-                    'pentavalent_1' => fake()->boolean(80) ? now()->subMonths(rand(1, 20))->toDateString() : null,
-                    'pentavalent_2' => fake()->boolean(70) ? now()->subMonths(rand(1, 18))->toDateString() : null,
-                    'pentavalent_3' => fake()->boolean(60) ? now()->subMonths(rand(1, 16))->toDateString() : null,
+                    'pentavalent_1' => fake()->boolean(80)
+                        ? $dob->copy()->addWeeks(6)->toDateString()
+                        : null,
 
-                    'opv_1' => fake()->boolean(80) ? now()->subMonths(rand(1, 20))->toDateString() : null,
-                    'opv_2' => fake()->boolean(70) ? now()->subMonths(rand(1, 18))->toDateString() : null,
-                    'opv_3' => fake()->boolean(60) ? now()->subMonths(rand(1, 16))->toDateString() : null,
+                    'pentavalent_2' => fake()->boolean(70)
+                        ? $dob->copy()->addWeeks(10)->toDateString()
+                        : null,
 
-                    'ipv_1' => fake()->boolean(70) ? now()->subMonths(rand(1, 15))->toDateString() : null,
-                    'ipv_2' => fake()->boolean(50) ? now()->subMonths(rand(1, 12))->toDateString() : null,
+                    'pentavalent_3' => fake()->boolean(60)
+                        ? $dob->copy()->addWeeks(14)->toDateString()
+                        : null,
 
-                    'pcv_1' => fake()->boolean(80) ? now()->subMonths(rand(1, 20))->toDateString() : null,
-                    'pcv_2' => fake()->boolean(70) ? now()->subMonths(rand(1, 18))->toDateString() : null,
-                    'pcv_3' => fake()->boolean(60) ? now()->subMonths(rand(1, 16))->toDateString() : null,
+                    'opv_1' => fake()->boolean(80)
+                        ? $dob->copy()->addWeeks(6)->toDateString()
+                        : null,
 
-                    'mmr_1' => fake()->boolean(70) ? now()->subMonths(rand(1, 12))->toDateString() : null,
-                    'mmr_2' => fake()->boolean(40) ? now()->subMonths(rand(1, 6))->toDateString() : null,
+                    'opv_2' => fake()->boolean(70)
+                        ? $dob->copy()->addWeeks(10)->toDateString()
+                        : null,
+
+                    'opv_3' => fake()->boolean(60)
+                        ? $dob->copy()->addWeeks(14)->toDateString()
+                        : null,
+
+                    'ipv_1' => fake()->boolean(70)
+                        ? $dob->copy()->addWeeks(14)->toDateString()
+                        : null,
+
+                    'ipv_2' => fake()->boolean(50)
+                        ? $dob->copy()->addMonths(9)->toDateString()
+                        : null,
+
+                    'pcv_1' => fake()->boolean(80)
+                        ? $dob->copy()->addWeeks(6)->toDateString()
+                        : null,
+
+                    'pcv_2' => fake()->boolean(70)
+                        ? $dob->copy()->addWeeks(10)->toDateString()
+                        : null,
+
+                    'pcv_3' => fake()->boolean(60)
+                        ? $dob->copy()->addWeeks(14)->toDateString()
+                        : null,
+
+                    'mmr_1' => fake()->boolean(70)
+                        ? $dob->copy()->addMonths(9)->toDateString()
+                        : null,
+
+                    'mmr_2' => fake()->boolean(40)
+                        ? $dob->copy()->addMonths(12)->toDateString()
+                        : null,
 
                     'fic' => $fic,
                     'cic' => $cic,
