@@ -1,5 +1,7 @@
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import { Head, Link } from "@inertiajs/react";
+import { useState, useEffect } from "react";
+import { SkeletonTable } from "@/Components/Skeleton";
 import {
     Plus,
     Baby,
@@ -27,27 +29,42 @@ const StatusBadge = ({ value }) => {
 };
 
 export default function Index({ records = [] }) {
+    const [isLoading, setIsLoading] = useState(true);
+
+    useEffect(() => {
+        // Set loading to false after data is available
+        if (records) {
+            setIsLoading(false);
+        }
+    }, [records]);
+
     return (
         <AuthenticatedLayout
             header={
-                <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                    <div>
-                        <h2 className="text-xl font-semibold text-slate-800">
-                            Child Immunization
-                        </h2>
-                        <p className="text-sm text-slate-500">
-                            Manage child vaccine records and immunization
-                            status.
-                        </p>
-                    </div>
+                <div className="flex items-center justify-between">
+                    <h2 className="text-xl font-semibold text-slate-800">
+                        Child Immunization
+                    </h2>
 
-                    <Link
-                        href={route("child.immunization.create")}
-                        className="inline-flex items-center justify-center gap-2 rounded-xl bg-violet-600 px-4 py-2.5 text-sm font-semibold text-white shadow-lg shadow-violet-200 transition hover:bg-violet-700"
-                    >
-                        <Plus className="h-4 w-4" />
-                        New Record
-                    </Link>
+                    <div className="flex items-center gap-3">
+                        <a
+                            href={route("child.immunization.bulk-pdf")}
+                            className="inline-flex items-center justify-center gap-2 rounded-xl bg-pink-600 px-4 py-2.5 text-sm font-semibold text-white shadow-lg shadow-pink-200 transition hover:bg-pink-700"
+                        >
+                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                            </svg>
+                            Download All Records
+                        </a>
+
+                        <Link
+                            href={route("child.immunization.create")}
+                            className="inline-flex items-center justify-center gap-2 rounded-xl bg-violet-600 px-4 py-2.5 text-sm font-semibold text-white shadow-lg shadow-violet-200 transition hover:bg-violet-700"
+                        >
+                            <Plus className="h-4 w-4" />
+                            New Record
+                        </Link>
+                    </div>
                 </div>
             }
         >
@@ -93,6 +110,9 @@ export default function Index({ records = [] }) {
                         </div>
 
                         <div className="overflow-x-auto">
+                            {isLoading ? (
+                                <SkeletonTable rows={8} />
+                            ) : (
                             <table className="w-full min-w-[1000px] text-left text-sm">
                                 <thead>
                                     <tr className="border-b border-violet-100 bg-violet-50/80 text-xs uppercase tracking-wide text-violet-700">
@@ -118,21 +138,16 @@ export default function Index({ records = [] }) {
                                                 className="transition hover:bg-violet-50/50"
                                             >
                                                 <td className="px-6 py-4">
-                                                    <div className="flex items-center gap-3">
-                                                        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-violet-100 text-violet-700">
-                                                            <Baby className="h-5 w-5" />
-                                                        </div>
-                                                        <div>
-                                                            <p className="font-semibold text-slate-800">
-                                                                {record.child_name ??
-                                                                    "—"}
-                                                            </p>
-                                                            <p className="text-xs text-slate-500">
-                                                                Sex:{" "}
-                                                                {record.sex ??
-                                                                    "—"}
-                                                            </p>
-                                                        </div>
+                                                    <div>
+                                                        <p className="font-semibold text-slate-800">
+                                                            {record.child_name ??
+                                                                "—"}
+                                                        </p>
+                                                        <p className="text-xs text-slate-500">
+                                                            Sex:{" "}
+                                                            {record.sex ??
+                                                                "—"}
+                                                        </p>
                                                     </div>
                                                 </td>
 
@@ -225,6 +240,7 @@ export default function Index({ records = [] }) {
                                     )}
                                 </tbody>
                             </table>
+                            )}
                         </div>
                     </div>
                 </div>

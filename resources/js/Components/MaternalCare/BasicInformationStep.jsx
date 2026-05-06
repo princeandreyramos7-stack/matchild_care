@@ -2,10 +2,9 @@ import InputLabel from '@/Components/InputLabel';
 import TextInput from '@/Components/TextInput';
 import InputError from '@/Components/InputError';
 
-export default function BasicInformationStep({ data, setData, errors }) {
+function BasicInformationStep({ data, setData, errors, isEdit = false }) {
     return (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 auto-rows-fr">
-
             {/* SECTION 1 - Registration Details */}
             <div className="bg-white rounded-xl p-6 border border-gray-200 shadow-md hover:shadow-lg transition-shadow duration-200 flex flex-col">
                 <div className="flex items-center gap-3 mb-5 pb-4 border-b border-gray-100">
@@ -18,6 +17,14 @@ export default function BasicInformationStep({ data, setData, errors }) {
                         <h4 className="text-base font-bold text-gray-900 truncate">Registration Details</h4>
                         <p className="text-xs text-gray-500 truncate">Initial registration information</p>
                     </div>
+                    {isEdit && (
+                        <span className="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-gray-100 text-gray-600">
+                            <svg className="w-3.5 h-3.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                            </svg>
+                            Locked
+                        </span>
+                    )}
                 </div>
                 
                 <div className="space-y-4 flex-1">
@@ -28,21 +35,47 @@ export default function BasicInformationStep({ data, setData, errors }) {
                             type="date"
                             value={data.date_of_registration}
                             onChange={(e) => setData('date_of_registration', e.target.value)}
+                            readOnly={isEdit}
+                            disabled={isEdit}
+                            className={isEdit ? 'bg-gray-50 cursor-not-allowed' : ''}
                             required
                         />
+                        {isEdit && (
+                            <p className="mt-2 text-xs text-gray-500 flex items-center gap-1.5">
+                                <svg className="w-3.5 h-3.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                                </svg>
+                                <span>Registration date cannot be changed</span>
+                            </p>
+                        )}
                         <InputError message={errors.date_of_registration} className="mt-2" />
                     </div>
 
                     <div>
                         <InputLabel htmlFor="family_serial" value="Family Serial Number" required />
-                        <TextInput
-                            id="family_serial"
-                            type="text"
-                            value={data.family_serial}
-                            onChange={(e) => setData('family_serial', e.target.value)}
-                            placeholder="Enter family serial number"
-                            required
-                        />
+                        <div className="relative">
+                            <TextInput
+                                id="family_serial"
+                                type="text"
+                                value={data.family_serial}
+                                readOnly
+                                className="bg-gradient-to-r from-green-50 to-emerald-50 cursor-not-allowed border-green-200 text-green-900 font-semibold"
+                            />
+                            <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none">
+                                <div className="flex items-center gap-1.5 bg-green-100 px-2 py-1 rounded-md">
+                                    <svg className="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
+                                    <span className="text-xs font-medium text-green-700">{isEdit ? 'Fixed' : 'Auto'}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <p className="mt-2 text-xs text-green-600 flex items-center gap-1.5">
+                            <svg className="w-3.5 h-3.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                            </svg>
+                            <span>{isEdit ? 'Family serial is permanent' : 'Auto-generated based on latest record'}</span>
+                        </p>
                         <InputError message={errors.family_serial} className="mt-2" />
                     </div>
                 </div>
@@ -191,7 +224,8 @@ export default function BasicInformationStep({ data, setData, errors }) {
                     </div>
                 </div>
             </div>
-
         </div>
     );
 }
+
+export default BasicInformationStep;

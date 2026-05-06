@@ -356,61 +356,101 @@ export default function DeliveryPostnatalStep({ data, setData }) {
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-                    {[1, 2, 3].map((visitNum) => (
-                        <div key={visitNum} className="border border-gray-200 rounded-lg p-4 bg-gray-50">
-                            <div className="flex items-center gap-2 mb-3">
-                                <div className="w-7 h-7 bg-amber-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                                    <span className="text-xs font-bold text-amber-600">{visitNum}</span>
+                    {[1, 2, 3].map((visitNum) => {
+                        const currentVisit = data.postpartum_supplementation.visits[visitNum - 1];
+                        const hasDate = currentVisit?.date;
+                        const hasTablets = currentVisit?.tablets;
+                        const isCompleted = hasDate && hasTablets;
+                        
+                        // Get suggested date for next visit
+                        const getSuggestedPostpartumDate = () => {
+                            if (visitNum === 1) return null;
+                            const prevVisit = data.postpartum_supplementation.visits[visitNum - 2];
+                            const prevDate = prevVisit?.date;
+                            
+                            if (prevDate && !hasDate) {
+                                const prev = new Date(prevDate);
+                                const suggested = new Date(prev);
+                                suggested.setDate(prev.getDate() + 28); // 4 weeks
+                                return suggested.toISOString().split('T')[0];
+                            }
+                            return null;
+                        };
+                        
+                        const suggestedDate = getSuggestedPostpartumDate();
+                        
+                        return (
+                            <div 
+                                key={visitNum} 
+                                className={`border-2 rounded-lg p-4 ${isCompleted ? 'bg-gradient-to-br from-green-50 to-emerald-50 border-green-300' : 'bg-white border-green-100'}`}
+                            >
+                                <div className="flex items-center gap-2 mb-3">
+                                    <div className={`w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0 ${isCompleted ? 'bg-green-100' : 'bg-green-50'}`}>
+                                        {isCompleted ? (
+                                            <svg className="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                                            </svg>
+                                        ) : (
+                                            <span className="text-xs font-bold text-green-600">{visitNum}</span>
+                                        )}
+                                    </div>
+                                    <h5 className={`text-sm font-semibold ${isCompleted ? 'text-green-900' : 'text-gray-800'}`}>
+                                        {visitNum === 1 ? '1st' : visitNum === 2 ? '2nd' : '3rd'} Visit
+                                    </h5>
                                 </div>
-                                <h5 className="text-sm font-semibold text-gray-800">
-                                    {visitNum === 1 ? '1st' : visitNum === 2 ? '2nd' : '3rd'} Visit
-                                </h5>
+                                <div className="space-y-3">
+                                    <div>
+                                        <InputLabel htmlFor={`postpartum_date_${visitNum}`} value="Date" className="text-xs" />
+                                        <TextInput
+                                            id={`postpartum_date_${visitNum}`}
+                                            type="date"
+                                            className={`mt-1 block w-full text-sm ${isCompleted ? 'border-green-300' : ''}`}
+                                            value={data.postpartum_supplementation.visits[visitNum - 1]?.date || ''}
+                                            onChange={(e) => {
+                                                const newVisits = [...data.postpartum_supplementation.visits];
+                                                newVisits[visitNum - 1] = {
+                                                    ...newVisits[visitNum - 1],
+                                                    date: e.target.value
+                                                };
+                                                setData('postpartum_supplementation', {
+                                                    ...data.postpartum_supplementation,
+                                                    visits: newVisits
+                                                });
+                                            }}
+                                        />
+                                        {suggestedDate && (
+                                            <div className="mt-1 p-1.5 bg-blue-50 border border-blue-200 rounded">
+                                                <p className="text-xs text-blue-700">
+                                                    💡 Suggested: {new Date(suggestedDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                                                </p>
+                                            </div>
+                                        )}
+                                    </div>
+                                    <div>
+                                        <InputLabel htmlFor={`postpartum_tablets_${visitNum}`} value="# Tablets Given" className="text-xs" />
+                                        <TextInput
+                                            id={`postpartum_tablets_${visitNum}`}
+                                            type="number"
+                                            className="mt-1 block w-full text-sm"
+                                            value={data.postpartum_supplementation.visits[visitNum - 1]?.tablets || ''}
+                                            onChange={(e) => {
+                                                const newVisits = [...data.postpartum_supplementation.visits];
+                                                newVisits[visitNum - 1] = {
+                                                    ...newVisits[visitNum - 1],
+                                                    tablets: e.target.value
+                                                };
+                                                setData('postpartum_supplementation', {
+                                                    ...data.postpartum_supplementation,
+                                                    visits: newVisits
+                                                });
+                                            }}
+                                            placeholder="Enter number"
+                                        />
+                                    </div>
+                                </div>
                             </div>
-                            <div className="space-y-3">
-                                <div>
-                                    <InputLabel htmlFor={`postpartum_date_${visitNum}`} value="Date" className="text-xs" />
-                                    <TextInput
-                                        id={`postpartum_date_${visitNum}`}
-                                        type="date"
-                                        className="mt-1 block w-full text-sm"
-                                        value={data.postpartum_supplementation.visits[visitNum - 1]?.date || ''}
-                                        onChange={(e) => {
-                                            const newVisits = [...data.postpartum_supplementation.visits];
-                                            newVisits[visitNum - 1] = {
-                                                ...newVisits[visitNum - 1],
-                                                date: e.target.value
-                                            };
-                                            setData('postpartum_supplementation', {
-                                                ...data.postpartum_supplementation,
-                                                visits: newVisits
-                                            });
-                                        }}
-                                    />
-                                </div>
-                                <div>
-                                    <InputLabel htmlFor={`postpartum_tablets_${visitNum}`} value="# Tablets Given" className="text-xs" />
-                                    <TextInput
-                                        id={`postpartum_tablets_${visitNum}`}
-                                        type="number"
-                                        className="mt-1 block w-full text-sm"
-                                        value={data.postpartum_supplementation.visits[visitNum - 1]?.tablets || ''}
-                                        onChange={(e) => {
-                                            const newVisits = [...data.postpartum_supplementation.visits];
-                                            newVisits[visitNum - 1] = {
-                                                ...newVisits[visitNum - 1],
-                                                tablets: e.target.value
-                                            };
-                                            setData('postpartum_supplementation', {
-                                                ...data.postpartum_supplementation,
-                                                visits: newVisits
-                                            });
-                                        }}
-                                        placeholder="Enter number"
-                                    />
-                                </div>
-                            </div>
-                        </div>
-                    ))}
+                        );
+                    })}
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">

@@ -16,7 +16,7 @@ export default function SupplementationScreeningStep({ data, setData }) {
                     </div>
                     <div className="flex-1 min-w-0">
                         <h4 className="text-base font-bold text-gray-900 truncate">Multiple Micronutrient Supplementation</h4>
-                        <p className="text-xs text-gray-500 truncate">Number of Tablets Given at Date (mm/dd/yy)</p>
+                        <p className="text-xs text-gray-500 truncate">Number of Tablets Given at Date (4 weeks apart)</p>
                     </div>
                 </div>
 
@@ -36,60 +36,100 @@ export default function SupplementationScreeningStep({ data, setData }) {
                     </label>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-                        {[1, 2, 3, 4, 5, 6].map((visitNum) => (
-                            <div key={visitNum} className="border border-gray-200 rounded-lg p-4 bg-gray-50">
-                                <div className="flex items-center gap-2 mb-3">
-                                    <div className="w-7 h-7 bg-teal-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                                        <span className="text-xs font-bold text-teal-600">{visitNum}</span>
+                        {[1, 2, 3, 4, 5, 6].map((visitNum) => {
+                            const currentVisit = data.micronutrient_supplementation.visits[visitNum - 1];
+                            const hasDate = currentVisit?.date;
+                            const hasTablets = currentVisit?.tablets;
+                            const isCompleted = hasDate && hasTablets;
+                            
+                            // Get suggested date for next visit
+                            const getSuggestedMMSDate = () => {
+                                if (visitNum === 1) return null;
+                                const prevVisit = data.micronutrient_supplementation.visits[visitNum - 2];
+                                const prevDate = prevVisit?.date;
+                                
+                                if (prevDate && !hasDate) {
+                                    const prev = new Date(prevDate);
+                                    const suggested = new Date(prev);
+                                    suggested.setDate(prev.getDate() + 28); // 4 weeks
+                                    return suggested.toISOString().split('T')[0];
+                                }
+                                return null;
+                            };
+                            
+                            const suggestedDate = getSuggestedMMSDate();
+                            
+                            return (
+                                <div 
+                                    key={visitNum} 
+                                    className={`border-2 rounded-lg p-4 ${isCompleted ? 'bg-gradient-to-br from-green-50 to-emerald-50 border-green-300' : 'bg-white border-green-100'}`}
+                                >
+                                    <div className="flex items-center gap-2 mb-3">
+                                        <div className={`w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0 ${isCompleted ? 'bg-green-100' : 'bg-green-50'}`}>
+                                            {isCompleted ? (
+                                                <svg className="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                                                </svg>
+                                            ) : (
+                                                <span className="text-xs font-bold text-green-600">{visitNum}</span>
+                                            )}
+                                        </div>
+                                        <h5 className={`text-sm font-semibold ${isCompleted ? 'text-green-900' : 'text-gray-800'}`}>
+                                            {visitNum === 1 ? '1st' : visitNum === 2 ? '2nd' : visitNum === 3 ? '3rd' : `${visitNum}th`} Visit
+                                        </h5>
                                     </div>
-                                    <h5 className="text-sm font-semibold text-gray-800">
-                                        {visitNum === 1 ? '1st' : visitNum === 2 ? '2nd' : visitNum === 3 ? '3rd' : `${visitNum}th`} Visit
-                                    </h5>
-                                </div>
 
-                                <div className="space-y-3">
-                                    <div>
-                                        <InputLabel value="Date" className="text-xs" />
-                                        <TextInput
-                                            type="date"
-                                            className="mt-1 block w-full"
-                                            value={data.micronutrient_supplementation.visits[visitNum - 1]?.date || ''}
-                                            onChange={(e) => {
-                                                const newVisits = [...data.micronutrient_supplementation.visits];
-                                                newVisits[visitNum - 1] = {
-                                                    ...newVisits[visitNum - 1],
-                                                    date: e.target.value
-                                                };
-                                                setData('micronutrient_supplementation', {
-                                                    ...data.micronutrient_supplementation,
-                                                    visits: newVisits
-                                                });
-                                            }}
-                                        />
-                                    </div>
+                                    <div className="space-y-3">
+                                        <div>
+                                            <InputLabel value="Date" className="text-xs" />
+                                            <TextInput
+                                                type="date"
+                                                className={`mt-1 block w-full ${isCompleted ? 'border-green-300' : ''}`}
+                                                value={data.micronutrient_supplementation.visits[visitNum - 1]?.date || ''}
+                                                onChange={(e) => {
+                                                    const newVisits = [...data.micronutrient_supplementation.visits];
+                                                    newVisits[visitNum - 1] = {
+                                                        ...newVisits[visitNum - 1],
+                                                        date: e.target.value
+                                                    };
+                                                    setData('micronutrient_supplementation', {
+                                                        ...data.micronutrient_supplementation,
+                                                        visits: newVisits
+                                                    });
+                                                }}
+                                            />
+                                            {suggestedDate && (
+                                                <div className="mt-1 p-1.5 bg-blue-50 border border-blue-200 rounded">
+                                                    <p className="text-xs text-blue-700">
+                                                        💡 Suggested: {new Date(suggestedDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                                                    </p>
+                                                </div>
+                                            )}
+                                        </div>
 
-                                    <div>
-                                        <InputLabel value="# Tablets" className="text-xs" />
-                                        <TextInput
-                                            type="number"
-                                            className="mt-1 block w-full"
-                                            value={data.micronutrient_supplementation.visits[visitNum - 1]?.tablets || ''}
-                                            onChange={(e) => {
-                                                const newVisits = [...data.micronutrient_supplementation.visits];
-                                                newVisits[visitNum - 1] = {
-                                                    ...newVisits[visitNum - 1],
-                                                    tablets: e.target.value
-                                                };
-                                                setData('micronutrient_supplementation', {
-                                                    ...data.micronutrient_supplementation,
-                                                    visits: newVisits
-                                                });
-                                            }}
-                                        />
+                                        <div>
+                                            <InputLabel value="# Tablets" className="text-xs" />
+                                            <TextInput
+                                                type="number"
+                                                className="mt-1 block w-full"
+                                                value={data.micronutrient_supplementation.visits[visitNum - 1]?.tablets || ''}
+                                                onChange={(e) => {
+                                                    const newVisits = [...data.micronutrient_supplementation.visits];
+                                                    newVisits[visitNum - 1] = {
+                                                        ...newVisits[visitNum - 1],
+                                                        tablets: e.target.value
+                                                    };
+                                                    setData('micronutrient_supplementation', {
+                                                        ...data.micronutrient_supplementation,
+                                                        visits: newVisits
+                                                    });
+                                                }}
+                                            />
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                        ))}
+                            );
+                        })}
                     </div>
                 </div>
             </div>
@@ -104,7 +144,7 @@ export default function SupplementationScreeningStep({ data, setData }) {
                     </div>
                     <div className="flex-1 min-w-0">
                         <h4 className="text-base font-bold text-gray-900 truncate">High Risk Pregnancy - Calcium</h4>
-                        <p className="text-xs text-gray-500 truncate">Number of Tablets Given at Date (mm/dd/yy)</p>
+                        <p className="text-xs text-gray-500 truncate">Number of Tablets Given at Date (4 weeks apart)</p>
                     </div>
                 </div>
 
@@ -124,53 +164,99 @@ export default function SupplementationScreeningStep({ data, setData }) {
                     </label>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
-                        {[1, 2, 3, 4].map((visitNum) => (
-                            <div key={visitNum} className="border border-gray-200 rounded-lg p-4 bg-gray-50">
-                                <div className="flex items-center gap-2 mb-3">
-                                    <div className="w-7 h-7 bg-red-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                                        <span className="text-xs font-bold text-red-600">{visitNum}</span>
+                        {[1, 2, 3, 4].map((visitNum) => {
+                            const currentVisit = data.high_risk_supplementation.visits[visitNum - 1];
+                            const hasDate = currentVisit?.date;
+                            const hasTablets = currentVisit?.tablets;
+                            const isCompleted = hasDate && hasTablets;
+                            
+                            // Get suggested date for next visit
+                            const getSuggestedCalciumDate = () => {
+                                if (visitNum === 1) return null;
+                                const prevVisit = data.high_risk_supplementation.visits[visitNum - 2];
+                                const prevDate = prevVisit?.date;
+                                
+                                if (prevDate && !hasDate) {
+                                    const prev = new Date(prevDate);
+                                    const suggested = new Date(prev);
+                                    suggested.setDate(prev.getDate() + 28); // 4 weeks
+                                    return suggested.toISOString().split('T')[0];
+                                }
+                                return null;
+                            };
+                            
+                            const suggestedDate = getSuggestedCalciumDate();
+                            
+                            return (
+                                <div 
+                                    key={visitNum} 
+                                    className={`border-2 rounded-lg p-4 ${isCompleted ? 'bg-gradient-to-br from-green-50 to-emerald-50 border-green-300' : 'bg-white border-green-100'}`}
+                                >
+                                    <div className="flex items-center gap-2 mb-3">
+                                        <div className={`w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0 ${isCompleted ? 'bg-green-100' : 'bg-green-50'}`}>
+                                            {isCompleted ? (
+                                                <svg className="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                                                </svg>
+                                            ) : (
+                                                <span className="text-xs font-bold text-green-600">{visitNum}</span>
+                                            )}
+                                        </div>
+                                        <h5 className={`text-sm font-semibold ${isCompleted ? 'text-green-900' : 'text-gray-800'}`}>Visit {visitNum}</h5>
                                     </div>
-                                    <h5 className="text-sm font-semibold text-gray-800">{visitNum} Visit</h5>
-                                </div>
 
-                                <div className="space-y-3">
-                                    <TextInput
-                                        type="date"
-                                        className="block w-full"
-                                        value={data.high_risk_supplementation.visits[visitNum - 1]?.date || ''}
-                                        onChange={(e) => {
-                                            const newVisits = [...data.high_risk_supplementation.visits];
-                                            newVisits[visitNum - 1] = {
-                                                ...newVisits[visitNum - 1],
-                                                date: e.target.value
-                                            };
-                                            setData('high_risk_supplementation', {
-                                                ...data.high_risk_supplementation,
-                                                visits: newVisits
-                                            });
-                                        }}
-                                    />
+                                    <div className="space-y-3">
+                                        <div>
+                                            <InputLabel value="Date" className="text-xs" />
+                                            <TextInput
+                                                type="date"
+                                                className={`mt-1 block w-full ${isCompleted ? 'border-green-300' : ''}`}
+                                                value={data.high_risk_supplementation.visits[visitNum - 1]?.date || ''}
+                                                onChange={(e) => {
+                                                    const newVisits = [...data.high_risk_supplementation.visits];
+                                                    newVisits[visitNum - 1] = {
+                                                        ...newVisits[visitNum - 1],
+                                                        date: e.target.value
+                                                    };
+                                                    setData('high_risk_supplementation', {
+                                                        ...data.high_risk_supplementation,
+                                                        visits: newVisits
+                                                    });
+                                                }}
+                                            />
+                                            {suggestedDate && (
+                                                <div className="mt-1 p-1.5 bg-blue-50 border border-blue-200 rounded">
+                                                    <p className="text-xs text-blue-700">
+                                                        💡 Suggested: {new Date(suggestedDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                                                    </p>
+                                                </div>
+                                            )}
+                                        </div>
 
-                                    <TextInput
-                                        type="number"
-                                        placeholder="# Tablets"
-                                        className="block w-full"
-                                        value={data.high_risk_supplementation.visits[visitNum - 1]?.tablets || ''}
-                                        onChange={(e) => {
-                                            const newVisits = [...data.high_risk_supplementation.visits];
-                                            newVisits[visitNum - 1] = {
-                                                ...newVisits[visitNum - 1],
-                                                tablets: e.target.value
-                                            };
-                                            setData('high_risk_supplementation', {
-                                                ...data.high_risk_supplementation,
-                                                visits: newVisits
-                                            });
-                                        }}
-                                    />
+                                        <div>
+                                            <InputLabel value="# Tablets" className="text-xs" />
+                                            <TextInput
+                                                type="number"
+                                                placeholder="# Tablets"
+                                                className="mt-1 block w-full"
+                                                value={data.high_risk_supplementation.visits[visitNum - 1]?.tablets || ''}
+                                                onChange={(e) => {
+                                                    const newVisits = [...data.high_risk_supplementation.visits];
+                                                    newVisits[visitNum - 1] = {
+                                                        ...newVisits[visitNum - 1],
+                                                        tablets: e.target.value
+                                                    };
+                                                    setData('high_risk_supplementation', {
+                                                        ...data.high_risk_supplementation,
+                                                        visits: newVisits
+                                                    });
+                                                }}
+                                            />
+                                        </div>
+                                    </div>
                                 </div>
-                            </div>
-                        ))}
+                            );
+                        })}
                     </div>
                 </div>
             </div>

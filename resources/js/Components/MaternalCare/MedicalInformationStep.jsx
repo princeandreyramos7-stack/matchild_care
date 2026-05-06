@@ -43,7 +43,6 @@ export default function MedicalInformationStep({ data, setData, errors }) {
                     </div>
                     <div className="flex-1 min-w-0">
                         <h4 className="text-base font-bold text-gray-900 truncate">Expected Date of Delivery</h4>
-                        <p className="text-xs text-gray-500 truncate">Auto-calculated using Naegele's Rule</p>
                     </div>
                 </div>
                 
