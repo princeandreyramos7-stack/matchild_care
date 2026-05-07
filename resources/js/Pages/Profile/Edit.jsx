@@ -11,9 +11,9 @@ export default function Edit({ mustVerifyEmail, status }) {
     
     // Determine which layout to use based on user role
     let Layout = HealthWorkerLayout;
-    if (auth.user.roles.includes('admin')) {
+    if (auth.user.role === 'admin') {
         Layout = AdminLayout;
-    } else if (auth.user.roles.includes('patient')) {
+    } else if (auth.user.role === 'patient') {
         Layout = PatientLayout;
     }
     

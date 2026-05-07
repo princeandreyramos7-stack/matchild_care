@@ -18,12 +18,12 @@ Route::get('/', function () {
 });
 
 Route::get('/dashboard', function () {
-    // Optimize queries with select() to fetch only needed columns
     // Check user role and redirect accordingly
-    if (auth()->user()->hasRole('patient')) {
+    if (auth()->user()->role === 'patient') {
         return redirect()->route('patient.dashboard');
     }
 
+    // Optimize queries with select() to fetch only needed columns
     $stats = [
         'total_records' => \App\Models\MaternalRecord::count(),
         'active_pregnancies' => \App\Models\MaternalRecord::whereNull('deleted_at')
@@ -83,3 +83,10 @@ Route::middleware('auth')->group(function () {
 });
 
 require __DIR__.'/auth.php';
+
+// Patient Routes
+Route::middleware('auth')->prefix('patient')->name('patient.')->group(function () {
+    Route::get('/dashboard', [PatientController::class, 'dashboard'])->name('dashboard');
+    Route::get('/records', [PatientController::class, 'records'])->name('records');
+    Route::get('/notifications', [PatientController::class, 'notifications'])->name('notifications');
+});

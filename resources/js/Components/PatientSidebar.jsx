@@ -2,21 +2,15 @@ import { Link, usePage } from '@inertiajs/react';
 import { Home, FileText, Bell, Settings, ChevronLeft, ChevronRight, ChevronDown, ChevronUp } from 'lucide-react';
 import { useState } from 'react';
 
-export default function PatientSidebar({ isCollapsed, setIsCollapsed, onNavigate }) {
+export default function PatientSidebar({ isCollapsed, setIsCollapsed }) {
     const { auth } = usePage().props;
     const [showUserMenu, setShowUserMenu] = useState(false);
     
     const navigation = [
         { name: 'Dashboard', href: route('patient.dashboard'), icon: Home },
-        { name: 'My Records', href: route('patient.my-records'), icon: FileText },
+        { name: 'My Records', href: route('patient.records'), icon: FileText },
         { name: 'Notifications', href: route('patient.notifications'), icon: Bell },
     ];
-
-    const handleNavClick = () => {
-        if (onNavigate) {
-            onNavigate();
-        }
-    };
 
     return (
         <div className={`flex h-screen flex-col bg-white border-r border-gray-200 transition-all duration-300 ${isCollapsed ? 'w-16' : 'w-64'}`}>
@@ -24,13 +18,13 @@ export default function PatientSidebar({ isCollapsed, setIsCollapsed, onNavigate
                 {!isCollapsed && <h1 className="text-xl font-bold text-gray-900">Patient Portal</h1>}
                 <button
                     onClick={() => setIsCollapsed(!isCollapsed)}
-                    className="p-1 rounded-md hover:bg-gray-100 text-gray-600 hidden md:block"
+                    className="p-1 rounded-md hover:bg-gray-100 text-gray-600"
                 >
                     {isCollapsed ? <ChevronRight className="h-5 w-5" /> : <ChevronLeft className="h-5 w-5" />}
                 </button>
             </div>
             
-            <nav className="flex-1 space-y-1 px-2 py-4 overflow-y-auto">
+            <nav className="flex-1 space-y-1 px-2 py-4">
                 {navigation.map((item) => {
                     const Icon = item.icon;
                     const isActive = route().current() === item.href.replace(route().t.url, '');
@@ -39,7 +33,6 @@ export default function PatientSidebar({ isCollapsed, setIsCollapsed, onNavigate
                         <Link
                             key={item.name}
                             href={item.href}
-                            onClick={handleNavClick}
                             className={`
                                 group flex items-center px-2 py-2 text-sm font-medium rounded-md
                                 ${isCollapsed ? 'justify-center' : ''}
@@ -76,9 +69,9 @@ export default function PatientSidebar({ isCollapsed, setIsCollapsed, onNavigate
                                 <p className="text-xs text-gray-500">Patient</p>
                             </div>
                             {showUserMenu ? (
-                                <ChevronUp className="h-4 w-4 text-gray-400 flex-shrink-0" />
+                                <ChevronUp className="h-4 w-4 text-gray-400" />
                             ) : (
-                                <ChevronDown className="h-4 w-4 text-gray-400 flex-shrink-0" />
+                                <ChevronDown className="h-4 w-4 text-gray-400" />
                             )}
                         </button>
                         
@@ -86,7 +79,6 @@ export default function PatientSidebar({ isCollapsed, setIsCollapsed, onNavigate
                             <div className="space-y-1 pl-2">
                                 <Link
                                     href={route('profile.edit')}
-                                    onClick={handleNavClick}
                                     className="block w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-gray-900 rounded-md"
                                 >
                                     Profile Settings
@@ -95,7 +87,6 @@ export default function PatientSidebar({ isCollapsed, setIsCollapsed, onNavigate
                                     href={route('logout')}
                                     method="post"
                                     as="button"
-                                    onClick={handleNavClick}
                                     className="block w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-gray-900 rounded-md"
                                 >
                                     Sign out
@@ -118,7 +109,6 @@ export default function PatientSidebar({ isCollapsed, setIsCollapsed, onNavigate
                             <div className="flex flex-col items-center space-y-1">
                                 <Link
                                     href={route('profile.edit')}
-                                    onClick={handleNavClick}
                                     className="p-2 text-gray-700 hover:bg-gray-50 rounded-md"
                                     title="Profile Settings"
                                 >

@@ -19,10 +19,10 @@ class RoleMiddleware
             return redirect()->route('login');
         }
 
-        foreach ($roles as $role) {
-            if (auth()->user()->hasRole($role)) {
-                return $next($request);
-            }
+        $userRole = auth()->user()->role;
+        
+        if (in_array($userRole, $roles)) {
+            return $next($request);
         }
 
         abort(403, 'Unauthorized access.');
