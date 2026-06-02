@@ -35,6 +35,9 @@ export default function Login({ status, canResetPassword }) {
                 <p className="mt-2 text-sm text-slate-500">
                     Sign in to continue to your account.
                 </p>
+                <p className="mt-1 text-xs text-slate-400">
+                    Patients: Use Family Serial Number as username
+                </p>
             </div>
 
             {status && (
@@ -45,20 +48,20 @@ export default function Login({ status, canResetPassword }) {
 
             <form onSubmit={submit} className="space-y-5">
                 <div>
-                    <InputLabel htmlFor="email" value="Email Address" />
+                    <InputLabel htmlFor="email" value="Email / Family Serial" />
 
                     <div className="relative mt-2">
                         <Mail className="pointer-events-none absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-violet-400" />
 
                         <TextInput
                             id="email"
-                            type="email"
+                            type="text"
                             name="email"
                             value={data.email}
                             className="block w-full rounded-xl border-slate-200 py-3 ps-11 shadow-sm focus:border-violet-500 focus:ring-violet-500"
                             autoComplete="username"
                             isFocused={true}
-                            placeholder="Enter your email"
+                            placeholder="Email or Family Serial (e.g., FAM-001)"
                             onChange={(e) => setData("email", e.target.value)}
                         />
                     </div>

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreMaternalCareRequest;
 use App\Services\MaternalCareService;
+use App\Services\PatientAccountService;
 use App\Models\MaternalRecord;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Log;
@@ -281,14 +282,20 @@ class MaternalCareController extends Controller
                 auth()->id()
             );
 
-            Log::info('Maternal care record created successfully', [
+            // Automatically create patient account
+            $patientUser = PatientAccountService::createPatientAccount($maternalRecord);
+            $defaultPassword = PatientAccountService::getDefaultPassword($maternalRecord);
+
+            Log::info('Maternal care record and patient account created successfully', [
                 'record_id' => $maternalRecord->id,
                 'family_serial' => $maternalRecord->family_serial,
+                'patient_user_id' => $patientUser->id,
+                'username' => $patientUser->username,
             ]);
 
             return redirect()
                 ->route('parent.maternal-care')
-                ->with('success', 'Maternal care record created successfully.');
+                ->with('success', "Maternal care record created successfully. Patient login: {$patientUser->username} / Password: {$defaultPassword}");
 
         } catch (\Exception $e) {
             Log::error('Failed to create maternal care record', [

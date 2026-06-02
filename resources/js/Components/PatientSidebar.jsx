@@ -7,7 +7,7 @@ export default function PatientSidebar({ isCollapsed, setIsCollapsed }) {
     const [showUserMenu, setShowUserMenu] = useState(false);
     
     const navigation = [
-        { name: 'Dashboard', href: route('patient.dashboard'), icon: Home },
+        { name: 'Home', href: route('patient.dashboard'), icon: Home },
         { name: 'My Records', href: route('patient.records'), icon: FileText },
         { name: 'Notifications', href: route('patient.notifications'), icon: Bell },
     ];
