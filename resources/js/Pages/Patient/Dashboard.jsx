@@ -1,45 +1,52 @@
 import PatientLayout from '@/Layouts/PatientLayout';
 import { Head } from '@inertiajs/react';
-import { Heart, Play, BookOpen, Calendar, Baby, Users, Stethoscope, Apple, Activity, ExternalLink, AlertCircle, ChevronDown, ChevronUp, CheckCircle, FileText } from 'lucide-react';
+import { Heart, BookOpen, Calendar, Baby, Users, Stethoscope, Apple, Activity, ChevronDown, ChevronUp, CheckCircle, Droplet, Moon, Dumbbell, Brain, Play, ExternalLink } from 'lucide-react';
 import { useState } from 'react';
 
 export default function Dashboard({ maternalRecord }) {
+    const [expandedTip, setExpandedTip] = useState(null);
     const [expandedArticle, setExpandedArticle] = useState(null);
+
+    const toggleTip = (index) => {
+        setExpandedTip(expandedTip === index ? null : index);
+    };
 
     const toggleArticle = (index) => {
         setExpandedArticle(expandedArticle === index ? null : index);
     };
-    const pregnancyVideos = [
+
+    // Video Tutorials
+    const videoTutorials = [
         {
             title: "Pregnancy Health and Nutrition",
-            description: "Essential nutrition tips for a healthy pregnancy",
+            description: "Essential nutrition tips for a healthy pregnancy journey",
             youtubeId: "9C_HReR_McQ",
             duration: "10:30",
             category: "Nutrition"
         },
         {
             title: "Prenatal Care: What to Expect",
-            description: "Complete guide to prenatal checkups and care",
+            description: "Complete guide to prenatal checkups and medical care",
             youtubeId: "yPUUj4CZYCU",
             duration: "15:45",
             category: "Prenatal Care"
         },
         {
-            title: "Exercise During Pregnancy",
-            description: "Safe exercises for expecting mothers",
+            title: "Safe Exercise During Pregnancy",
+            description: "Safe and effective exercises for expecting mothers",
             youtubeId: "3bRH8HTfeUQ",
             duration: "12:20",
             category: "Exercise"
         },
         {
             title: "Preparing for Labor and Delivery",
-            description: "What every mom should know about childbirth",
+            description: "Everything you need to know about childbirth",
             youtubeId: "j7YucfJuziU",
             duration: "18:15",
             category: "Labor"
         },
         {
-            title: "Postpartum Care Guide",
+            title: "Postpartum Care Essentials",
             description: "Taking care of yourself after delivery",
             youtubeId: "LQVW_L2rViE",
             duration: "14:30",
@@ -47,267 +54,449 @@ export default function Dashboard({ maternalRecord }) {
         },
         {
             title: "Breastfeeding Basics",
-            description: "Everything you need to know about breastfeeding",
+            description: "Complete guide to successful breastfeeding",
             youtubeId: "1k04uxmVzwU",
             duration: "16:40",
             category: "Breastfeeding"
         }
     ];
 
+    // Health Articles
+    const healthArticles = [
+        {
+            title: "Understanding Morning Sickness",
+            excerpt: "Learn about causes, symptoms, and effective remedies for morning sickness during early pregnancy.",
+            category: "First Trimester",
+            readTime: "5 min read",
+            content: "Morning sickness, also called nausea and vomiting of pregnancy (NVP), affects up to 80% of pregnant women. Despite its name, it can occur at any time of day. It typically begins around week 6 and improves by week 12-14 of pregnancy.",
+            url: "https://www.acog.org/womens-health/faqs/morning-sickness-nausea-and-vomiting-of-pregnancy",
+            tips: [
+                "Eat small, frequent meals throughout the day (5-6 meals)",
+                "Keep crackers by your bedside and eat a few before getting up",
+                "Avoid strong smells and trigger foods",
+                "Try ginger tea, ginger ale, or ginger candies",
+                "Stay hydrated - sip water, clear fluids, or ice chips",
+                "Get plenty of rest and avoid fatigue",
+                "Try vitamin B6 supplements (consult your doctor first)",
+                "Consider acupressure wristbands",
+                "Contact your doctor if you can't keep anything down"
+            ]
+        },
+        {
+            title: "Choosing the Right Prenatal Vitamin",
+            excerpt: "A comprehensive guide to selecting prenatal vitamins with the right nutrients for you and your baby.",
+            category: "Nutrition",
+            readTime: "7 min read",
+            content: "Prenatal vitamins are specially formulated multivitamins that provide extra nutrients needed during pregnancy. They help fill nutritional gaps and support your baby's development.",
+            url: "https://www.acog.org/womens-health/faqs/nutrition-during-pregnancy",
+            tips: [
+                "Look for 400-800 mcg of folic acid (prevents neural tube defects)",
+                "Ensure 27 mg of iron (prevents anemia)",
+                "Check for 1000 mg of calcium (bone development)",
+                "Include 200-300 mg of DHA (brain development)",
+                "Verify vitamin D content (600 IU recommended)",
+                "Consider chewable or gummy options if pills are difficult",
+                "Take with food to reduce nausea",
+                "Avoid megadoses - more isn't always better",
+                "Consult your doctor about your specific needs"
+            ]
+        },
+        {
+            title: "Managing Pregnancy Back Pain",
+            excerpt: "Safe and effective strategies to relieve and prevent back pain during pregnancy.",
+            category: "Comfort",
+            readTime: "6 min read",
+            content: "Back pain affects about 50-70% of pregnant women. It's caused by weight gain, posture changes, hormone effects on ligaments, and stress. Most back pain occurs in the lower back and can range from mild to severe.",
+            url: "https://www.acog.org/womens-health/faqs/back-pain-during-pregnancy",
+            tips: [
+                "Practice good posture - stand straight, shoulders back",
+                "Wear low-heeled (not flat) supportive shoes",
+                "Use a pregnancy support belt for your belly",
+                "Sleep on your left side with pillow between knees",
+                "Do prenatal yoga and gentle stretching exercises",
+                "Apply heat or cold packs to painful areas",
+                "Get prenatal massage from a certified therapist",
+                "Avoid heavy lifting and twisting movements",
+                "Consider physical therapy if pain is severe"
+            ]
+        },
+        {
+            title: "Preparing Your Birth Plan",
+            excerpt: "Step-by-step guide to creating a personalized birth plan that reflects your preferences.",
+            category: "Labor Prep",
+            readTime: "10 min read",
+            content: "A birth plan is a document that communicates your preferences for labor and delivery to your healthcare team. While flexibility is important (things may change), having a plan helps you think through your options and express your wishes.",
+            url: "https://www.marchofdimes.org/find-support/topics/pregnancy/making-birth-plan",
+            tips: [
+                "Research pain management options (epidural, natural methods)",
+                "Decide who you want present during labor",
+                "Consider your preferences for labor positions and movement",
+                "Think about interventions (induction, episiotomy)",
+                "Plan for immediate postpartum (skin-to-skin, breastfeeding)",
+                "Discuss newborn procedures (vitamin K, eye ointment)",
+                "Keep it concise (1-2 pages is ideal)",
+                "Review with your healthcare provider in advance",
+                "Stay flexible - safety is the priority"
+            ]
+        },
+        {
+            title: "Understanding Ultrasounds",
+            excerpt: "What to expect during pregnancy ultrasounds and how to interpret the results.",
+            category: "Medical Tests",
+            readTime: "8 min read",
+            content: "Ultrasounds use sound waves to create images of your baby in the womb. They're safe, painless, and provide valuable information about your baby's development, due date, and overall health.",
+            url: "https://www.acog.org/womens-health/faqs/ultrasound-exams",
+            tips: [
+                "First ultrasound (6-9 weeks): Confirms pregnancy and heartbeat",
+                "Dating ultrasound (8-12 weeks): Determines due date accurately",
+                "Anatomy scan (18-22 weeks): Checks baby's organs and growth",
+                "Drink water before early ultrasounds (helps imaging)",
+                "Ask questions during the scan",
+                "Request printed photos if you'd like keepsakes",
+                "Bring your partner or support person",
+                "Understand normal variations vs. concerns",
+                "Follow up on any abnormal findings promptly"
+            ]
+        },
+        {
+            title: "Bonding with Your Baby Before Birth",
+            excerpt: "Ways to connect with your baby before birth and establish early bonding.",
+            category: "Emotional Health",
+            readTime: "5 min read",
+            content: "Bonding with your baby can begin well before birth. Prenatal bonding helps you feel connected to your baby, reduces anxiety, and may even benefit your baby's development.",
+            url: "https://www.healthychildren.org/English/ages-stages/prenatal/Pages/default.aspx",
+            tips: [
+                "Talk or sing to your baby daily",
+                "Play music - baby can hear from around 18 weeks",
+                "Gently massage your belly",
+                "Respond to baby's movements by touching your belly",
+                "Look at ultrasound pictures together with partner",
+                "Read books or stories aloud to baby",
+                "Practice visualization and positive affirmations",
+                "Take time for quiet moments to focus on baby",
+                "Keep a pregnancy journal about your journey"
+            ]
+        }
+    ];
+
     const educationalTopics = [
         {
             icon: Apple,
-            color: "bg-red-100 text-red-600",
             title: "Nutrition During Pregnancy",
             description: "Learn about essential nutrients, vitamins, and healthy eating habits for you and your baby's development.",
             tips: [
-                "Eat plenty of fruits and vegetables",
-                "Include protein-rich foods daily",
-                "Stay hydrated with 8-10 glasses of water",
-                "Take prenatal vitamins as prescribed"
+                "Eat plenty of fruits and vegetables (5+ servings daily)",
+                "Include protein-rich foods: fish, chicken, beans, eggs",
+                "Choose whole grains over refined carbohydrates",
+                "Stay hydrated with 8-10 glasses of water daily",
+                "Take prenatal vitamins as prescribed by your doctor"
             ]
         },
         {
             icon: Activity,
-            color: "bg-green-100 text-green-600",
-            title: "Staying Active",
+            title: "Staying Active Safely",
             description: "Safe exercises and activities to maintain health during pregnancy.",
             tips: [
-                "Walk for 30 minutes daily",
-                "Practice prenatal yoga",
-                "Do pelvic floor exercises",
-                "Avoid high-impact activities"
+                "Walk for 30 minutes most days of the week",
+                "Practice prenatal yoga for flexibility and relaxation",
+                "Swim or do water aerobics (gentle on joints)",
+                "Perform pelvic floor exercises (Kegels) daily",
+                "Avoid high-impact activities and contact sports"
             ]
         },
         {
             icon: Calendar,
-            color: "bg-blue-100 text-blue-600",
-            title: "Prenatal Checkups",
+            title: "Prenatal Checkup Importance",
             description: "Understanding the importance of regular prenatal visits and what to expect.",
             tips: [
-                "Attend all scheduled appointments",
-                "Track your symptoms and questions",
-                "Bring your partner or support person",
-                "Follow your doctor's recommendations"
+                "Attend all scheduled prenatal appointments",
+                "Write down symptoms and questions beforehand",
+                "Bring your partner or support person along",
+                "Follow your healthcare provider's recommendations",
+                "Don't hesitate to call between visits if concerned"
             ]
         },
         {
             icon: Baby,
-            color: "bg-purple-100 text-purple-600",
-            title: "Baby Development",
+            title: "Baby Development Stages",
             description: "Week-by-week guide to your baby's growth and development milestones.",
             tips: [
-                "Track developmental milestones",
-                "Learn about fetal movements",
-                "Understand ultrasound results",
-                "Prepare for baby's arrival"
+                "First trimester: Major organs and systems form",
+                "Second trimester: Rapid growth, movements felt",
+                "Third trimester: Weight gain, preparing for birth",
+                "Track fetal movements after 28 weeks",
+                "Learn about developmental milestones at each stage"
             ]
         },
         {
             icon: Stethoscope,
-            color: "bg-pink-100 text-pink-600",
-            title: "Warning Signs",
+            title: "Warning Signs to Watch",
             description: "Know when to contact your healthcare provider immediately.",
             tips: [
-                "Severe abdominal pain",
                 "Vaginal bleeding or fluid leakage",
-                "Severe headaches or vision changes",
-                "Decreased fetal movement"
+                "Severe abdominal pain or cramping",
+                "Severe headaches with vision changes",
+                "Sudden swelling of face, hands, or feet",
+                "Decreased fetal movement after 28 weeks"
             ]
         },
         {
             icon: Users,
-            color: "bg-orange-100 text-orange-600",
             title: "Support & Community",
             description: "Connect with other expecting mothers and build your support network.",
             tips: [
-                "Join prenatal classes",
-                "Connect with other moms",
-                "Involve your partner",
+                "Join prenatal classes in your area",
+                "Connect with other expectant mothers",
+                "Involve your partner in the pregnancy journey",
+                "Build a support network of family and friends",
                 "Seek emotional support when needed"
             ]
         }
     ];
 
-    const helpfulResources = [
-        {
-            title: "WHO Guidelines on Antenatal Care",
-            url: "https://www.who.int/publications/i/item/9789241549912",
-            description: "Comprehensive guidelines for pregnancy care",
-            category: "Guidelines"
-        },
-        {
-            title: "Pregnancy Nutrition Guide - CDC",
-            url: "https://www.cdc.gov/nutrition/infantandtoddlernutrition/foods-and-drinks/index.html",
-            description: "CDC nutrition recommendations for pregnant women",
-            category: "Nutrition"
-        },
-        {
-            title: "Maternal Mental Health - NIMH",
-            url: "https://www.nimh.nih.gov/health/publications/perinatal-depression",
-            description: "Understanding and managing mental health during pregnancy",
-            category: "Mental Health"
-        },
-        {
-            title: "Exercise During Pregnancy - ACOG",
-            url: "https://www.acog.org/womens-health/faqs/exercise-during-pregnancy",
-            description: "Safe exercise recommendations from medical experts",
-            category: "Exercise"
-        },
-        {
-            title: "Breastfeeding Information - La Leche League",
-            url: "https://www.llli.org/breastfeeding-info/",
-            description: "Complete guide to breastfeeding and support",
-            category: "Breastfeeding"
-        },
-        {
-            title: "Prenatal Testing Information",
-            url: "https://www.marchofdimes.org/pregnancy/prenatal-tests.aspx",
-            description: "Understanding prenatal tests and screenings",
-            category: "Medical Tests"
-        },
-        {
-            title: "Sleep During Pregnancy",
-            url: "https://www.sleepfoundation.org/pregnancy/sleep-and-pregnancy",
-            description: "Tips for better sleep during pregnancy",
-            category: "Sleep & Rest"
-        },
-        {
-            title: "Common Pregnancy Discomforts",
-            url: "https://www.acog.org/womens-health/faqs/common-pregnancy-discomforts",
-            description: "Managing common pregnancy symptoms",
-            category: "Symptoms"
-        },
-        {
-            title: "Preparing for Labor and Birth",
-            url: "https://www.health.harvard.edu/womens-health/preparing-for-labor-and-birth",
-            description: "What to expect during labor and delivery",
-            category: "Labor"
-        }
-    ];
-
-    const pregnancyArticles = [
+    const pregnancyGuides = [
         {
             icon: Baby,
-            color: "bg-pink-500",
             title: "First Trimester Guide (Weeks 1-12)",
-            content: "Your baby is developing rapidly during these first weeks. Key developments include the formation of major organs, heartbeat detection (around week 6), and limb development. Common symptoms include morning sickness, fatigue, and frequent urination.",
+            subtitle: "The Foundation Period",
+            overview: "Your baby is developing rapidly during these first weeks. Key developments include the formation of major organs, heartbeat detection (around week 6), and limb development. Common symptoms include morning sickness, fatigue, and frequent urination.",
             keyPoints: [
-                "Start taking prenatal vitamins with folic acid",
-                "Avoid alcohol, smoking, and harmful substances",
-                "Schedule your first prenatal appointment",
-                "Stay hydrated and eat small, frequent meals",
-                "Get plenty of rest - fatigue is normal"
+                "Start taking prenatal vitamins with folic acid (400-800 mcg daily)",
+                "Avoid alcohol, smoking, and harmful substances completely",
+                "Schedule your first prenatal appointment (usually weeks 8-10)",
+                "Eat small, frequent meals to manage nausea",
+                "Get plenty of rest - fatigue is normal and important",
+                "Stay hydrated even if experiencing morning sickness",
+                "Avoid raw fish, unpasteurized dairy, and deli meats"
+            ],
+            whatToExpect: [
+                "Fatigue and increased need for sleep",
+                "Morning sickness (can occur any time of day)",
+                "Breast tenderness and enlargement",
+                "Frequent urination",
+                "Mood swings due to hormonal changes",
+                "Food aversions or cravings"
             ]
         },
         {
             icon: Heart,
-            color: "bg-red-500",
             title: "Second Trimester Guide (Weeks 13-26)",
-            content: "Often called the 'golden period' of pregnancy. You may feel more energetic, and morning sickness typically subsides. Your baby grows rapidly, and you'll start feeling movements around weeks 18-20.",
+            subtitle: "The Golden Period",
+            overview: "Often called the 'golden period' of pregnancy. You may feel more energetic, and morning sickness typically subsides. Your baby grows rapidly, and you'll start feeling movements around weeks 18-20 (earlier for second pregnancies).",
             keyPoints: [
-                "Continue prenatal vitamins and balanced diet",
-                "Stay physically active with safe exercises",
-                "Attend all scheduled prenatal appointments",
-                "Monitor fetal movements (quickening)",
-                "Consider prenatal classes for birth preparation"
+                "Continue prenatal vitamins and maintain balanced diet",
+                "Stay physically active with approved safe exercises",
+                "Attend all scheduled prenatal appointments and ultrasounds",
+                "Monitor and enjoy feeling fetal movements (quickening)",
+                "Consider enrolling in prenatal and childbirth classes",
+                "Start planning for baby's arrival and nursery setup",
+                "Practice good posture to prevent back pain"
+            ],
+            whatToExpect: [
+                "Increased energy levels",
+                "Growing baby bump becomes visible",
+                "Feeling baby's movements (quickening)",
+                "Relief from morning sickness",
+                "Possible round ligament pain",
+                "Increased appetite",
+                "Skin and hair changes"
             ]
         },
         {
             icon: Activity,
-            color: "bg-purple-500",
             title: "Third Trimester Guide (Weeks 27-40)",
-            content: "The final stretch! Your baby is gaining weight and developing fully. You may experience increased fatigue, back pain, and frequent urination. Your body is preparing for labor and delivery.",
+            subtitle: "The Final Stretch",
+            overview: "The final stretch! Your baby is gaining weight and developing fully. You may experience increased fatigue, back pain, and frequent urination. Your body is preparing for labor and delivery. Stay in close contact with your healthcare provider.",
             keyPoints: [
-                "Monitor baby's movements daily",
-                "Prepare hospital bag and birth plan",
-                "Learn about signs of labor",
-                "Get adequate rest and manage discomfort",
-                "Stay in close contact with your healthcare provider"
+                "Monitor baby's movements daily - note any changes",
+                "Prepare hospital bag by week 36 (have it ready)",
+                "Create and discuss your birth plan with your provider",
+                "Learn and recognize signs of labor",
+                "Get adequate rest and manage discomfort with approved methods",
+                "Attend final prenatal visits (weekly by week 36)",
+                "Prepare your home and arrange help for after delivery"
+            ],
+            whatToExpect: [
+                "Increased fatigue and shortness of breath",
+                "Braxton Hicks contractions (practice contractions)",
+                "Back pain and pelvic pressure",
+                "Frequent urination increases",
+                "Difficulty sleeping",
+                "Swelling in feet and ankles",
+                "Emotional anticipation and nesting instinct"
             ]
         },
         {
             icon: Apple,
-            color: "bg-green-500",
-            title: "Nutrition & Diet During Pregnancy",
-            content: "Proper nutrition is crucial for your baby's development. Focus on a balanced diet rich in protein, calcium, iron, and folic acid. Aim for 300-500 additional calories per day in the second and third trimesters.",
+            title: "Nutrition & Healthy Eating",
+            subtitle: "Fuel for Two",
+            overview: "Proper nutrition is crucial for your baby's development. Focus on a balanced diet rich in protein, calcium, iron, and folic acid. You need about 300-500 additional calories per day in the second and third trimesters.",
             keyPoints: [
-                "Eat plenty of fruits and vegetables (5+ servings daily)",
-                "Include lean proteins: fish, chicken, beans, eggs",
-                "Choose whole grains over refined carbohydrates",
+                "Eat plenty of colorful fruits and vegetables (5+ servings)",
+                "Include lean proteins: fish (low-mercury), chicken, beans, eggs",
+                "Choose whole grains: brown rice, whole wheat bread, oats",
+                "Get calcium from dairy or fortified alternatives (1000mg/day)",
                 "Limit caffeine to 200mg per day (about 1 cup of coffee)",
-                "Avoid raw fish, unpasteurized dairy, and deli meats"
+                "Eat iron-rich foods to prevent anemia",
+                "Take DHA supplements for baby's brain development"
+            ],
+            whatToExpect: [
+                "Foods to avoid: raw fish, unpasteurized products, deli meats",
+                "Limit high-mercury fish (swordfish, king mackerel)",
+                "Safe cheeses: pasteurized only",
+                "Cook eggs, meat, and poultry thoroughly",
+                "Wash all fruits and vegetables",
+                "Avoid excessive vitamin A supplements"
             ]
         },
         {
-            icon: Activity,
-            color: "bg-blue-500",
+            icon: Dumbbell,
             title: "Exercise & Physical Activity",
-            content: "Regular exercise during pregnancy can help reduce discomfort, prepare your body for labor, and improve overall well-being. Aim for 30 minutes of moderate exercise most days of the week.",
+            subtitle: "Stay Active, Stay Healthy",
+            overview: "Regular exercise during pregnancy can help reduce discomfort, prepare your body for labor, improve overall well-being, and aid postpartum recovery. Aim for 30 minutes of moderate exercise most days of the week.",
             keyPoints: [
-                "Walking is excellent - safe and easy to do",
-                "Prenatal yoga helps with flexibility and relaxation",
+                "Walking is excellent - safe, free, and easy to do anywhere",
+                "Prenatal yoga helps with flexibility, strength, and relaxation",
                 "Swimming is gentle on joints and very effective",
-                "Kegel exercises strengthen pelvic floor muscles",
-                "Avoid contact sports and activities with fall risk"
+                "Kegel exercises strengthen pelvic floor for delivery",
+                "Avoid contact sports and activities with fall risk",
+                "Stay hydrated and don't overheat during exercise",
+                "Listen to your body and rest when needed"
+            ],
+            whatToExpect: [
+                "Stop exercising if you experience pain, dizziness, or bleeding",
+                "Avoid lying flat on your back after first trimester",
+                "Don't exercise in extreme heat or humidity",
+                "Safe exercises: walking, swimming, stationary cycling",
+                "Avoid: scuba diving, contact sports, activities with fall risk",
+                "Modify intensity as pregnancy progresses"
             ]
         },
         {
-            icon: Heart,
-            color: "bg-pink-500",
-            title: "Emotional Well-being & Mental Health",
-            content: "Pregnancy brings hormonal changes that can affect your emotions. It's normal to experience mood swings, anxiety, or worry. Taking care of your mental health is just as important as physical health.",
+            icon: Brain,
+            title: "Emotional Well-being",
+            subtitle: "Mental Health Matters",
+            overview: "Pregnancy brings hormonal changes that can affect your emotions. It's normal to experience mood swings, anxiety, or worry. Taking care of your mental health is just as important as physical health.",
             keyPoints: [
                 "Talk about your feelings with partner, family, or friends",
-                "Join pregnancy support groups or classes",
-                "Practice relaxation techniques (meditation, deep breathing)",
-                "Get adequate sleep (7-9 hours per night)",
-                "Seek professional help if feeling depressed or anxious"
+                "Join pregnancy support groups or online communities",
+                "Practice relaxation: meditation, deep breathing, prenatal yoga",
+                "Get adequate sleep (7-9 hours) - use pillows for comfort",
+                "Seek professional help if feeling depressed or very anxious",
+                "Know that mood swings are normal due to hormones",
+                "Prepare mentally for parenthood and lifestyle changes"
+            ],
+            whatToExpect: [
+                "Mood swings and emotional sensitivity",
+                "Anxiety about baby's health and delivery",
+                "Concerns about being a good parent",
+                "Body image changes",
+                "Stress about finances and preparations",
+                "When to seek help: persistent sadness, loss of interest, anxiety"
             ]
         },
         {
-            icon: AlertCircle,
-            color: "bg-orange-500",
-            title: "Warning Signs & When to Call Your Doctor",
-            content: "While most pregnancies progress normally, it's important to recognize warning signs that require immediate medical attention. Trust your instincts - if something doesn't feel right, contact your healthcare provider.",
+            icon: Moon,
+            title: "Rest & Sleep Tips",
+            subtitle: "Quality Sleep During Pregnancy",
+            overview: "Getting enough rest is crucial during pregnancy. As your pregnancy progresses, finding a comfortable sleep position can be challenging. Sleep issues are common but manageable.",
             keyPoints: [
-                "Vaginal bleeding or fluid leakage",
-                "Severe or persistent abdominal pain",
-                "Severe headaches with vision changes",
-                "Sudden swelling of face, hands, or feet",
-                "Decreased fetal movement after 28 weeks",
-                "Fever above 100.4°F (38°C)",
-                "Painful urination or severe back pain",
-                "Persistent vomiting (unable to keep food/fluids down)"
+                "Sleep on your left side (improves blood flow to baby)",
+                "Use pregnancy pillows for support and comfort",
+                "Elevate your head if experiencing heartburn",
+                "Avoid large meals close to bedtime",
+                "Limit fluids 2-3 hours before bed (reduce nighttime bathroom trips)",
+                "Keep bedroom cool, dark, and quiet",
+                "Establish a relaxing bedtime routine"
+            ],
+            whatToExpect: [
+                "Difficulty finding comfortable positions (especially third trimester)",
+                "Frequent nighttime urination",
+                "Leg cramps during sleep",
+                "Heartburn and indigestion",
+                "Vivid dreams and nightmares",
+                "Insomnia due to anxiety or discomfort"
             ]
+        },
+        {
+            icon: Droplet,
+            title: "Hydration & Fluid Intake",
+            subtitle: "The Importance of Staying Hydrated",
+            overview: "Staying well-hydrated during pregnancy is essential for your health and your baby's development. Water helps form amniotic fluid, produce extra blood, build new tissue, and aids digestion.",
+            keyPoints: [
+                "Drink 8-10 glasses (64-80 oz) of water daily",
+                "Carry a water bottle with you throughout the day",
+                "Increase intake during hot weather or exercise",
+                "Include water-rich foods: watermelon, cucumbers, oranges",
+                "Limit sugary drinks and sodas",
+                "Herbal teas can count (check which are pregnancy-safe)",
+                "Signs of dehydration: dark urine, dizziness, dry mouth"
+            ],
+            whatToExpect: [
+                "Increased thirst is normal during pregnancy",
+                "Proper hydration reduces swelling and constipation",
+                "Helps prevent urinary tract infections",
+                "May reduce risk of preterm labor",
+                "Adequate amniotic fluid levels",
+                "Better skin elasticity"
+            ]
+        },
+        {
+            icon: Stethoscope,
+            title: "Warning Signs & When to Call",
+            subtitle: "Recognizing Emergency Situations",
+            overview: "While most pregnancies progress normally, it's important to recognize warning signs that require immediate medical attention. Trust your instincts - if something doesn't feel right, contact your healthcare provider.",
+            keyPoints: [
+                "Vaginal bleeding (any amount) or fluid leakage",
+                "Severe or persistent abdominal pain or cramping",
+                "Severe headaches with vision changes or spots",
+                "Sudden swelling of face, hands, or feet (signs of preeclampsia)",
+                "Decreased fetal movement after 28 weeks (less than 10 in 2 hours)",
+                "Fever above 100.4°F (38°C) that doesn't go down",
+                "Painful urination, severe back pain, or inability to urinate",
+                "Persistent vomiting (unable to keep food or fluids down)"
+            ],
+            whatToExpect: [
+                "Don't hesitate to call your provider - better safe than sorry",
+                "Have emergency contact numbers readily available",
+                "Know where to go: doctor's office vs emergency room",
+                "Keep a list of your medications and medical history",
+                "Trust your maternal instincts",
+                "Report any unusual symptoms promptly"
+            ]
+        }
+    ];
+
+    const dailyTips = [
+        {
+            icon: Apple,
+            title: "Prenatal Vitamins",
+            tip: "Take your prenatal vitamins with food every day"
+        },
+        {
+            icon: Droplet,
+            title: "Stay Hydrated",
+            tip: "Drink at least 8-10 glasses of water throughout the day"
+        },
+        {
+            icon: Dumbbell,
+            title: "Stay Active",
+            tip: "Light exercise like walking for 30 minutes is beneficial"
+        },
+        {
+            icon: Moon,
+            title: "Get Rest",
+            tip: "Aim for 7-9 hours of sleep each night"
+        },
+        {
+            icon: Calendar,
+            title: "Track Appointments",
+            tip: "Attend all scheduled prenatal appointments"
         },
         {
             icon: Baby,
-            color: "bg-indigo-500",
-            title: "Preparing for Baby's Arrival",
-            content: "The third trimester is the perfect time to prepare for your baby's arrival. Create a checklist of items to buy, prepare your home, and plan for the first weeks after birth.",
-            keyPoints: [
-                "Set up nursery and baby sleeping area",
-                "Stock up on diapers, wipes, and baby clothes",
-                "Prepare frozen meals for post-delivery",
-                "Install car seat and get it inspected",
-                "Pack hospital bag by week 36",
-                "Arrange help for first weeks at home"
-            ]
-        },
-        {
-            icon: Users,
-            color: "bg-teal-500",
-            title: "Partner & Family Involvement",
-            content: "Pregnancy is a family journey. Involving your partner and family can provide emotional support, practical help, and strengthen your support network.",
-            keyPoints: [
-                "Invite partner to prenatal appointments",
-                "Share pregnancy milestones and baby movements",
-                "Discuss parenting roles and expectations",
-                "Attend childbirth classes together",
-                "Create a postpartum support plan",
-                "Communicate openly about concerns and feelings"
-            ]
+            title: "Monitor Baby",
+            tip: "Track your baby's movements after 28 weeks"
         }
     ];
 
@@ -325,42 +514,38 @@ export default function Dashboard({ maternalRecord }) {
                 <div className="mx-auto max-w-7xl sm:px-6 lg:px-8">
                     <div className="space-y-6">
                         {/* Welcome Banner */}
-                        <div className="bg-gradient-to-r from-pink-500 via-pink-600 to-purple-600 rounded-xl shadow-lg overflow-hidden">
-                            <div className="px-6 py-8 sm:px-8">
-                                <div className="flex items-center justify-between">
-                                    <div className="flex-1">
-                                        <h3 className="text-3xl font-bold text-white mb-2">
-                                            Welcome to Your Pregnancy Journey
-                                        </h3>
-                                        <p className="text-pink-100 text-lg">
-                                            Learn, grow, and stay healthy with our educational resources
-                                        </p>
-                                    </div>
-                                    <div className="hidden sm:block">
-                                        <div className="bg-white/20 backdrop-blur-sm rounded-full p-4">
-                                            <Heart className="h-16 w-16 text-white" />
-                                        </div>
-                                    </div>
+                        <div className="bg-gradient-to-r from-indigo-500 to-indigo-600 rounded-xl shadow-lg p-8">
+                            <div className="flex items-center gap-4">
+                                <div className="p-4 bg-white/20 backdrop-blur-sm rounded-xl">
+                                    <Heart className="h-10 w-10 text-white" />
+                                </div>
+                                <div className="flex-1">
+                                    <h3 className="text-3xl font-bold text-white mb-2">
+                                        Welcome to Your Pregnancy Journey
+                                    </h3>
+                                    <p className="text-indigo-100 text-base">
+                                        Learn, grow, and stay healthy with our educational resources and expert tips
+                                    </p>
                                 </div>
                             </div>
                         </div>
 
-                        {/* Educational Videos Section */}
-                        <div className="bg-white rounded-xl shadow-lg overflow-hidden">
-                            <div className="bg-gradient-to-r from-purple-500 to-pink-600 px-6 py-4">
+                        {/* Video Tutorials Section */}
+                        <div className="bg-white rounded-xl shadow-lg overflow-hidden border border-indigo-100">
+                            <div className="bg-gradient-to-r from-indigo-500 to-indigo-600 px-6 py-4">
                                 <div className="flex items-center gap-3">
                                     <div className="p-2 bg-white/20 rounded-lg">
                                         <Play className="h-5 w-5 text-white" />
                                     </div>
                                     <h3 className="text-lg font-bold text-white">
-                                        Educational Videos
+                                        Video Tutorials & Guides
                                     </h3>
                                 </div>
                             </div>
                             <div className="p-6">
                                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                                    {pregnancyVideos.map((video, index) => (
-                                        <div key={index} className="group bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl overflow-hidden border border-gray-200 hover:shadow-lg transition-all duration-300">
+                                    {videoTutorials.map((video, index) => (
+                                        <div key={index} className="group bg-white rounded-xl overflow-hidden border-2 border-indigo-100 hover:border-indigo-300 hover:shadow-xl transition-all">
                                             <a 
                                                 href={`https://www.youtube.com/watch?v=${video.youtubeId}`}
                                                 target="_blank"
@@ -370,33 +555,36 @@ export default function Dashboard({ maternalRecord }) {
                                                 {/* Video Thumbnail */}
                                                 <div className="relative aspect-video bg-gray-200 overflow-hidden">
                                                     <img 
-                                                        src={`https://img.youtube.com/vi/${video.youtubeId}/maxresdefault.jpg`}
+                                                        src={`https://img.youtube.com/vi/${video.youtubeId}/mqdefault.jpg`}
                                                         alt={video.title}
                                                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                                                        onError={(e) => {
+                                                            e.target.src = `https://img.youtube.com/vi/${video.youtubeId}/0.jpg`;
+                                                        }}
                                                     />
                                                     <div className="absolute inset-0 bg-black/20 group-hover:bg-black/30 transition-colors flex items-center justify-center">
-                                                        <div className="bg-red-600 rounded-full p-4 group-hover:scale-110 transition-transform">
-                                                            <Play className="h-8 w-8 text-white fill-white" />
+                                                        <div className="bg-indigo-600 rounded-full p-3 group-hover:scale-110 group-hover:bg-indigo-700 transition-all shadow-lg">
+                                                            <Play className="h-6 w-6 text-white fill-white" />
                                                         </div>
                                                     </div>
                                                     <div className="absolute bottom-2 right-2 bg-black/80 text-white text-xs font-medium px-2 py-1 rounded">
                                                         {video.duration}
                                                     </div>
-                                                    <div className="absolute top-2 left-2 bg-pink-600 text-white text-xs font-semibold px-2 py-1 rounded">
+                                                    <div className="absolute top-2 left-2 bg-indigo-600 text-white text-xs font-semibold px-2 py-1 rounded shadow-md">
                                                         {video.category}
                                                     </div>
                                                 </div>
                                                 
                                                 {/* Video Info */}
-                                                <div className="p-4">
-                                                    <h4 className="font-bold text-gray-900 text-sm mb-2 line-clamp-2 group-hover:text-pink-600 transition-colors">
+                                                <div className="p-4 bg-gradient-to-b from-white to-indigo-50/30">
+                                                    <h4 className="font-bold text-gray-900 text-sm mb-2 line-clamp-2 group-hover:text-indigo-600 transition-colors">
                                                         {video.title}
                                                     </h4>
-                                                    <p className="text-xs text-gray-600 line-clamp-2">
+                                                    <p className="text-xs text-gray-600 line-clamp-2 mb-3">
                                                         {video.description}
                                                     </p>
-                                                    <div className="mt-3 flex items-center text-pink-600 text-xs font-medium">
-                                                        Watch on YouTube
+                                                    <div className="flex items-center text-indigo-600 text-xs font-semibold">
+                                                        <span>Watch on YouTube</span>
                                                         <ExternalLink className="h-3 w-3 ml-1" />
                                                     </div>
                                                 </div>
@@ -407,9 +595,144 @@ export default function Dashboard({ maternalRecord }) {
                             </div>
                         </div>
 
-                        {/* Educational Topics */}
-                        <div className="bg-white rounded-xl shadow-lg overflow-hidden">
-                            <div className="bg-gradient-to-r from-blue-500 to-indigo-600 px-6 py-4">
+                        {/* Health Articles Section */}
+                        <div className="bg-white rounded-xl shadow-lg overflow-hidden border border-indigo-100">
+                            <div className="bg-gradient-to-r from-indigo-500 to-indigo-600 px-6 py-4">
+                                <div className="flex items-center gap-3">
+                                    <div className="p-2 bg-white/20 rounded-lg">
+                                        <BookOpen className="h-5 w-5 text-white" />
+                                    </div>
+                                    <div>
+                                        <h3 className="text-lg font-bold text-white">
+                                            Helpful Articles & Resources
+                                        </h3>
+                                        <p className="text-xs text-indigo-100 mt-0.5">
+                                            Click on any article to read more
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="p-6">
+                                <div className="space-y-4">
+                                    {healthArticles.map((article, index) => {
+                                        const isExpanded = expandedArticle === index;
+                                        return (
+                                            <div key={index} className="border-2 border-indigo-100 rounded-xl overflow-hidden hover:border-indigo-300 hover:shadow-lg transition-all">
+                                                <button
+                                                    onClick={() => toggleArticle(index)}
+                                                    className="w-full p-5 flex items-center justify-between hover:bg-indigo-50/50 transition-colors text-left"
+                                                >
+                                                    <div className="flex-1">
+                                                        <div className="flex items-center gap-3 mb-2">
+                                                            <span className="text-xs font-semibold text-white bg-indigo-600 px-3 py-1 rounded-full shadow-sm">
+                                                                {article.category}
+                                                            </span>
+                                                            <span className="text-xs text-gray-500 font-medium">{article.readTime}</span>
+                                                        </div>
+                                                        <h4 className="font-bold text-gray-900 text-base mb-1">
+                                                            {article.title}
+                                                        </h4>
+                                                        <p className="text-sm text-gray-600">
+                                                            {article.excerpt}
+                                                        </p>
+                                                    </div>
+                                                    <div className="flex-shrink-0 ml-4">
+                                                        <div className="p-2 bg-indigo-100 rounded-lg">
+                                                            {isExpanded ? (
+                                                                <ChevronUp className="h-5 w-5 text-indigo-600" />
+                                                            ) : (
+                                                                <ChevronDown className="h-5 w-5 text-indigo-600" />
+                                                            )}
+                                                        </div>
+                                                    </div>
+                                                </button>
+
+                                                {isExpanded && (
+                                                    <div className="px-5 pb-5 border-t-2 border-indigo-100 bg-gradient-to-b from-indigo-50/30 to-white">
+                                                        <div className="pt-5">
+                                                            <p className="text-sm text-gray-700 mb-5 leading-relaxed">
+                                                                {article.content}
+                                                            </p>
+                                                            
+                                                            <div className="bg-white rounded-lg p-5 border-2 border-indigo-100 shadow-sm mb-4">
+                                                                <h5 className="font-bold text-gray-900 text-sm mb-3 flex items-center gap-2">
+                                                                    <div className="p-1 bg-indigo-100 rounded">
+                                                                        <CheckCircle className="h-4 w-4 text-indigo-600" />
+                                                                    </div>
+                                                                    Key Tips & Recommendations
+                                                                </h5>
+                                                                <ul className="space-y-2">
+                                                                    {article.tips.map((tip, tipIndex) => (
+                                                                        <li key={tipIndex} className="flex items-start gap-2 text-sm text-gray-700">
+                                                                            <div className="w-1.5 h-1.5 bg-indigo-600 rounded-full mt-1.5 flex-shrink-0"></div>
+                                                                            <span>{tip}</span>
+                                                                        </li>
+                                                                    ))}
+                                                                </ul>
+                                                            </div>
+
+                                                            {/* View Full Article Button */}
+                                                            <a
+                                                                href={article.url}
+                                                                target="_blank"
+                                                                rel="noopener noreferrer"
+                                                                className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-indigo-600 to-indigo-700 hover:from-indigo-700 hover:to-indigo-800 text-white font-semibold rounded-lg shadow-md hover:shadow-lg transition-all"
+                                                            >
+                                                                <BookOpen className="h-4 w-4" />
+                                                                <span>View Full Article</span>
+                                                                <ExternalLink className="h-4 w-4" />
+                                                            </a>
+                                                        </div>
+                                                    </div>
+                                                )}
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Daily Health Tips - Quick Cards */}
+                        <div className="bg-white rounded-xl shadow-lg overflow-hidden border border-indigo-100">
+                            <div className="bg-gradient-to-r from-indigo-500 to-indigo-600 px-6 py-4">
+                                <div className="flex items-center gap-3">
+                                    <div className="p-2 bg-white/20 rounded-lg">
+                                        <Heart className="h-5 w-5 text-white" />
+                                    </div>
+                                    <h3 className="text-lg font-bold text-white">
+                                        Daily Health Reminders
+                                    </h3>
+                                </div>
+                            </div>
+                            <div className="p-6">
+                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                                    {dailyTips.map((tip, index) => {
+                                        const Icon = tip.icon;
+                                        return (
+                                            <div key={index} className="border border-gray-200 rounded-lg p-4 hover:shadow-sm transition-shadow">
+                                                <div className="flex items-start gap-3">
+                                                    <div className="p-2 bg-gray-50 rounded-lg">
+                                                        <Icon className="h-5 w-5 text-gray-600" />
+                                                    </div>
+                                                    <div className="flex-1">
+                                                        <p className="text-sm font-medium text-gray-900 mb-1">
+                                                            {tip.title}
+                                                        </p>
+                                                        <p className="text-sm text-gray-600">
+                                                            {tip.tip}
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Essential Pregnancy Topics */}
+                        <div className="bg-white rounded-xl shadow-lg overflow-hidden border border-indigo-100">
+                            <div className="bg-gradient-to-r from-indigo-500 to-indigo-600 px-6 py-4">
                                 <div className="flex items-center gap-3">
                                     <div className="p-2 bg-white/20 rounded-lg">
                                         <BookOpen className="h-5 w-5 text-white" />
@@ -424,11 +747,11 @@ export default function Dashboard({ maternalRecord }) {
                                     {educationalTopics.map((topic, index) => {
                                         const Icon = topic.icon;
                                         return (
-                                            <div key={index} className="bg-gradient-to-br from-gray-50 to-white rounded-xl p-6 border border-gray-200 hover:shadow-md transition-shadow">
-                                                <div className={`inline-flex p-3 rounded-lg ${topic.color} mb-4`}>
-                                                    <Icon className="h-6 w-6" />
+                                            <div key={index} className="border border-gray-200 rounded-xl p-5 hover:shadow-md transition-shadow">
+                                                <div className="p-3 bg-gray-50 rounded-lg inline-flex mb-4">
+                                                    <Icon className="h-6 w-6 text-gray-600" />
                                                 </div>
-                                                <h4 className="font-bold text-gray-900 text-lg mb-2">
+                                                <h4 className="font-semibold text-gray-900 text-base mb-2">
                                                     {topic.title}
                                                 </h4>
                                                 <p className="text-sm text-gray-600 mb-4">
@@ -437,9 +760,7 @@ export default function Dashboard({ maternalRecord }) {
                                                 <ul className="space-y-2">
                                                     {topic.tips.map((tip, tipIndex) => (
                                                         <li key={tipIndex} className="flex items-start gap-2 text-sm text-gray-700">
-                                                            <div className="bg-pink-100 rounded-full p-1 mt-0.5">
-                                                                <div className="w-1 h-1 bg-pink-600 rounded-full"></div>
-                                                            </div>
+                                                            <div className="w-1.5 h-1.5 bg-gray-400 rounded-full mt-1.5"></div>
                                                             <span>{tip}</span>
                                                         </li>
                                                     ))}
@@ -451,9 +772,9 @@ export default function Dashboard({ maternalRecord }) {
                             </div>
                         </div>
 
-                        {/* Comprehensive Pregnancy Articles */}
-                        <div className="bg-white rounded-xl shadow-lg overflow-hidden">
-                            <div className="bg-gradient-to-r from-indigo-500 to-purple-600 px-6 py-4">
+                        {/* Comprehensive Pregnancy Guides */}
+                        <div className="bg-white rounded-xl shadow-lg overflow-hidden border border-indigo-100">
+                            <div className="bg-gradient-to-r from-indigo-500 to-indigo-600 px-6 py-4">
                                 <div className="flex items-center gap-3">
                                     <div className="p-2 bg-white/20 rounded-lg">
                                         <BookOpen className="h-5 w-5 text-white" />
@@ -462,62 +783,78 @@ export default function Dashboard({ maternalRecord }) {
                                         <h3 className="text-lg font-bold text-white">
                                             Comprehensive Pregnancy Guides
                                         </h3>
-                                        <p className="text-xs text-indigo-100 mt-1">
-                                            Click on any article to read more detailed information
+                                        <p className="text-xs text-indigo-100 mt-0.5">
+                                            Click on any guide to read detailed information
                                         </p>
                                     </div>
                                 </div>
                             </div>
                             <div className="p-6">
                                 <div className="space-y-4">
-                                    {pregnancyArticles.map((article, index) => {
-                                        const Icon = article.icon;
-                                        const isExpanded = expandedArticle === index;
+                                    {pregnancyGuides.map((guide, index) => {
+                                        const Icon = guide.icon;
+                                        const isExpanded = expandedTip === index;
                                         return (
-                                            <div key={index} className="bg-gradient-to-br from-gray-50 to-white rounded-xl border-2 border-gray-200 overflow-hidden hover:border-indigo-300 transition-colors">
+                                            <div key={index} className="border border-gray-200 rounded-xl overflow-hidden hover:shadow-sm transition-shadow">
                                                 <button
-                                                    onClick={() => toggleArticle(index)}
+                                                    onClick={() => toggleTip(index)}
                                                     className="w-full p-5 flex items-center justify-between hover:bg-gray-50 transition-colors"
                                                 >
                                                     <div className="flex items-center gap-4">
-                                                        <div className={`p-3 ${article.color} rounded-lg`}>
-                                                            <Icon className="h-6 w-6 text-white" />
+                                                        <div className="p-3 bg-indigo-50 rounded-lg">
+                                                            <Icon className="h-6 w-6 text-indigo-600" />
                                                         </div>
                                                         <div className="text-left">
-                                                            <h4 className="font-bold text-gray-900 text-base">
-                                                                {article.title}
+                                                            <h4 className="font-semibold text-gray-900 text-base">
+                                                                {guide.title}
                                                             </h4>
-                                                            <p className="text-sm text-gray-600 mt-1 line-clamp-2">
-                                                                {article.content}
+                                                            <p className="text-sm text-gray-600 mt-0.5">
+                                                                {guide.subtitle}
                                                             </p>
                                                         </div>
                                                     </div>
                                                     <div className="flex-shrink-0">
                                                         {isExpanded ? (
-                                                            <ChevronUp className="h-6 w-6 text-gray-600" />
+                                                            <ChevronUp className="h-5 w-5 text-gray-600" />
                                                         ) : (
-                                                            <ChevronDown className="h-6 w-6 text-gray-600" />
+                                                            <ChevronDown className="h-5 w-5 text-gray-600" />
                                                         )}
                                                     </div>
                                                 </button>
 
                                                 {isExpanded && (
-                                                    <div className="px-5 pb-5 border-t-2 border-gray-100 bg-gradient-to-br from-indigo-50/50 to-purple-50/50">
+                                                    <div className="px-5 pb-5 border-t border-gray-200 bg-gray-50">
                                                         <div className="pt-5">
-                                                            <p className="text-sm text-gray-700 mb-4 leading-relaxed">
-                                                                {article.content}
+                                                            <p className="text-sm text-gray-700 mb-5 leading-relaxed">
+                                                                {guide.overview}
                                                             </p>
-                                                            <div className="bg-white rounded-lg p-4 border border-indigo-200">
+                                                            
+                                                            {/* Key Points */}
+                                                            <div className="bg-white rounded-lg p-5 mb-4 border border-gray-200">
                                                                 <h5 className="font-semibold text-gray-900 text-sm mb-3 flex items-center gap-2">
                                                                     <CheckCircle className="h-4 w-4 text-indigo-600" />
-                                                                    Key Points to Remember:
+                                                                    Key Points to Remember
                                                                 </h5>
                                                                 <ul className="space-y-2">
-                                                                    {article.keyPoints.map((point, pointIndex) => (
+                                                                    {guide.keyPoints.map((point, pointIndex) => (
                                                                         <li key={pointIndex} className="flex items-start gap-2 text-sm text-gray-700">
-                                                                            <div className="bg-indigo-100 rounded-full p-1 mt-1 flex-shrink-0">
-                                                                                <div className="w-1.5 h-1.5 bg-indigo-600 rounded-full"></div>
-                                                                            </div>
+                                                                            <div className="w-1.5 h-1.5 bg-indigo-600 rounded-full mt-1.5"></div>
+                                                                            <span>{point}</span>
+                                                                        </li>
+                                                                    ))}
+                                                                </ul>
+                                                            </div>
+
+                                                            {/* What to Expect */}
+                                                            <div className="bg-white rounded-lg p-5 border border-gray-200">
+                                                                <h5 className="font-semibold text-gray-900 text-sm mb-3 flex items-center gap-2">
+                                                                    <Activity className="h-4 w-4 text-indigo-600" />
+                                                                    What to Expect
+                                                                </h5>
+                                                                <ul className="space-y-2">
+                                                                    {guide.whatToExpect.map((point, pointIndex) => (
+                                                                        <li key={pointIndex} className="flex items-start gap-2 text-sm text-gray-700">
+                                                                            <div className="w-1.5 h-1.5 bg-gray-400 rounded-full mt-1.5"></div>
                                                                             <span>{point}</span>
                                                                         </li>
                                                                     ))}
@@ -529,91 +866,6 @@ export default function Dashboard({ maternalRecord }) {
                                             </div>
                                         );
                                     })}
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Helpful Resources */}
-                        <div className="bg-white rounded-xl shadow-lg overflow-hidden">
-                            <div className="bg-gradient-to-r from-green-500 to-emerald-600 px-6 py-4">
-                                <div className="flex items-center gap-3">
-                                    <div className="p-2 bg-white/20 rounded-lg">
-                                        <BookOpen className="h-5 w-5 text-white" />
-                                    </div>
-                                    <h3 className="text-lg font-bold text-white">
-                                        Helpful Resources & Articles
-                                    </h3>
-                                </div>
-                            </div>
-                            <div className="p-6">
-                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                                    {helpfulResources.map((resource, index) => (
-                                        <a
-                                            key={index}
-                                            href={resource.url}
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-lg p-5 border border-green-200 hover:shadow-md transition-all group"
-                                        >
-                                            <div className="flex items-start justify-between mb-3">
-                                                <div className="bg-green-100 p-2 rounded-lg">
-                                                    <BookOpen className="h-5 w-5 text-green-600" />
-                                                </div>
-                                                <div className="flex items-center gap-1">
-                                                    <span className="text-xs font-semibold text-green-600 bg-green-100 px-2 py-1 rounded-full">
-                                                        {resource.category}
-                                                    </span>
-                                                    <ExternalLink className="h-4 w-4 text-green-600 group-hover:scale-110 transition-transform" />
-                                                </div>
-                                            </div>
-                                            <h4 className="font-bold text-gray-900 text-sm mb-2 group-hover:text-green-600 transition-colors">
-                                                {resource.title}
-                                            </h4>
-                                            <p className="text-xs text-gray-600">
-                                                {resource.description}
-                                            </p>
-                                        </a>
-                                    ))}
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Quick Health Tips */}
-                        <div className="bg-gradient-to-r from-orange-50 to-amber-50 border-l-4 border-orange-500 rounded-xl shadow-lg p-6">
-                            <div className="flex items-start gap-4">
-                                <div className="bg-orange-100 p-3 rounded-lg">
-                                    <Heart className="h-6 w-6 text-orange-600" />
-                                </div>
-                                <div className="flex-1">
-                                    <h3 className="text-lg font-bold text-gray-900 mb-2">
-                                        Daily Health Reminder
-                                    </h3>
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-gray-700">
-                                        <div className="flex items-center gap-2">
-                                            <div className="bg-orange-200 rounded-full p-1">
-                                                <div className="w-2 h-2 bg-orange-600 rounded-full"></div>
-                                            </div>
-                                            <span>Take your prenatal vitamins daily</span>
-                                        </div>
-                                        <div className="flex items-center gap-2">
-                                            <div className="bg-orange-200 rounded-full p-1">
-                                                <div className="w-2 h-2 bg-orange-600 rounded-full"></div>
-                                            </div>
-                                            <span>Stay hydrated - drink 8-10 glasses of water</span>
-                                        </div>
-                                        <div className="flex items-center gap-2">
-                                            <div className="bg-orange-200 rounded-full p-1">
-                                                <div className="w-2 h-2 bg-orange-600 rounded-full"></div>
-                                            </div>
-                                            <span>Get adequate rest and sleep (7-9 hours)</span>
-                                        </div>
-                                        <div className="flex items-center gap-2">
-                                            <div className="bg-orange-200 rounded-full p-1">
-                                                <div className="w-2 h-2 bg-orange-600 rounded-full"></div>
-                                            </div>
-                                            <span>Attend all scheduled prenatal appointments</span>
-                                        </div>
-                                    </div>
                                 </div>
                             </div>
                         </div>

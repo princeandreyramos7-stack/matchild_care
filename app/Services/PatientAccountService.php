@@ -16,8 +16,10 @@ class PatientAccountService
         // Username is the Family Serial Number
         $username = $maternalRecord->family_serial;
         
-        // Password is the first letter of the last name (lowercase)
-        $defaultPassword = strtolower(substr($maternalRecord->last_name, 0, 1));
+        // Password is Family Serial Number + first letter of last name (uppercase)
+        // Example: FAM-001B (for Brown family)
+        $firstLetterSurname = strtoupper(substr($maternalRecord->last_name, 0, 1));
+        $defaultPassword = $maternalRecord->family_serial . $firstLetterSurname;
         
         // Email is family_serial@maternal.local (for system purposes)
         $email = strtolower($maternalRecord->family_serial) . '@maternal.local';
@@ -43,6 +45,24 @@ class PatientAccountService
                 'password' => Hash::make($defaultPassword),
                 'role' => 'patient',
             ]);
+            
+            // Send SMS with login credentials if phone number available
+            if ($maternalRecord->contact_number) {
+                try {
+                    $smsService = new \App\Services\SmsService();
+                    $smsService->sendCredentials($maternalRecord->contact_number, [
+                        'patient_name' => $maternalRecord->first_name,
+                        'username' => $username,
+                        'password' => $defaultPassword,
+                        'login_url' => config('app.url') . '/login',
+                    ]);
+                } catch (\Exception $e) {
+                    \Log::warning('Failed to send SMS credentials', [
+                        'family_serial' => $maternalRecord->family_serial,
+                        'error' => $e->getMessage()
+                    ]);
+                }
+            }
         }
         
         // Update maternal record with user_id
@@ -56,6 +76,7 @@ class PatientAccountService
      */
     public static function getDefaultPassword(MaternalRecord $maternalRecord): string
     {
-        return strtolower(substr($maternalRecord->last_name, 0, 1));
+        $firstLetterSurname = strtoupper(substr($maternalRecord->last_name, 0, 1));
+        return $maternalRecord->family_serial . $firstLetterSurname;
     }
 }

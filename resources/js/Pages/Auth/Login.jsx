@@ -36,7 +36,7 @@ export default function Login({ status, canResetPassword }) {
                     Sign in to continue to your account.
                 </p>
                 <p className="mt-1 text-xs text-slate-400">
-                    Patients: Use Family Serial Number as username
+                    Patients: Username = Family Serial, Password = Family Serial + First Letter of Surname (e.g., FAM-001B)
                 </p>
             </div>
 
@@ -82,7 +82,7 @@ export default function Login({ status, canResetPassword }) {
                             value={data.password}
                             className="block w-full rounded-xl border-slate-200 py-3 ps-11 shadow-sm focus:border-violet-500 focus:ring-violet-500"
                             autoComplete="current-password"
-                            placeholder="Enter your password"
+                            placeholder="e.g., FAM-001B"
                             onChange={(e) =>
                                 setData("password", e.target.value)
                             }

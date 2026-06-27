@@ -89,6 +89,62 @@ Route::middleware('auth')->group(function () {
 
 });
 
+// SMS Test Route (Remove in production)
+Route::get('/test-sms', function () {
+    try {
+        $sms = new \App\Services\SmsService();
+        
+        // Replace with your actual phone number for testing
+        $testNumber = '09707112132'; // CHANGE THIS TO YOUR NUMBER
+        $result = $sms->send($testNumber, 'Test message from Maternal Care System! This is working! 📱');
+        
+        if ($result) {
+            return response()->json([
+                'success' => true,
+                'message' => 'SMS sent successfully! Check your phone at ' . $testNumber,
+                'logs' => 'Check storage/logs/laravel.log for details'
+            ]);
+        } else {
+            return response()->json([
+                'success' => false,
+                'message' => 'SMS sending failed. Check storage/logs/laravel.log for errors',
+                'enabled' => config('services.sms.enabled'),
+                'api_configured' => !empty(config('services.sms.api_key'))
+            ]);
+        }
+    } catch (\Exception $e) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Error: ' . $e->getMessage(),
+            'trace' => $e->getTraceAsString()
+        ], 500);
+    }
+})->middleware('auth')->name('test.sms');
+
+// SMS Test - Appointment Reminder
+Route::get('/test-appointment-sms', function () {
+    try {
+        $sms = new \App\Services\SmsService();
+        
+        $testNumber = '09123456789'; // CHANGE THIS TO YOUR NUMBER
+        $result = $sms->sendAppointmentReminder($testNumber, [
+            'patient_name' => 'Test Patient',
+            'appointment_date' => 'June 15, 2026',
+            'appointment_time' => '9:00 AM',
+        ]);
+        
+        return response()->json([
+            'success' => $result,
+            'message' => $result ? 'Appointment SMS sent!' : 'SMS failed',
+        ]);
+    } catch (\Exception $e) {
+        return response()->json([
+            'success' => false,
+            'error' => $e->getMessage()
+        ], 500);
+    }
+})->middleware('auth')->name('test.appointment-sms');
+
 require __DIR__.'/auth.php';
 
 // Patient Routes
