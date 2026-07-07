@@ -17,7 +17,13 @@ class SmsService
         $this->apiKey = config('services.sms.api_key');
         $this->endpoint = config('services.sms.endpoint');
         $this->senderName = config('services.sms.sender_name');
-        $this->client = new Client();
+        
+        // Create Guzzle client - SSL verification disabled for Windows compatibility
+        $this->client = new Client([
+            'verify' => false,  // Disable SSL verification
+            'timeout' => 30,
+            'connect_timeout' => 10,
+        ]);
     }
     
     /**
@@ -44,29 +50,15 @@ class SmsService
         }
         
         try {
-            // PhilSMS uses Bearer token authentication
-            $response = $this->client->post($this->endpoint, [
-                'headers' => [
-                    'Authorization' => 'Bearer ' . $this->apiKey,
-                    'Accept' => 'application/json',
-                    'Content-Type' => 'application/json',
-                ],
-                'json' => [
-                    'recipient' => $phoneNumber,
-                    'sender_id' => $this->senderName,
-                    'type' => 'plain',
-                    'message' => $message,
-                ]
-            ]);
+            $provider = config('services.sms.provider', 'unisms');
             
-            $result = json_decode($response->getBody(), true);
-            
-            Log::info('SMS sent successfully', [
-                'phone' => $phoneNumber,
-                'response' => $result
-            ]);
-            
-            return true;
+            if ($provider === 'unisms') {
+                return $this->sendViaUniSMS($phoneNumber, $message);
+            } elseif ($provider === 'semaphore') {
+                return $this->sendViaSemaphore($phoneNumber, $message);
+            } else {
+                return $this->sendViaPhilSMS($phoneNumber, $message);
+            }
         } catch (\Exception $e) {
             Log::error('SMS sending failed', [
                 'phone' => $phoneNumber,
@@ -76,6 +68,91 @@ class SmsService
             
             return false;
         }
+    }
+    
+    /**
+     * Send SMS via UniSMS API
+     */
+    protected function sendViaUniSMS(string $phoneNumber, string $message): bool
+    {
+        $response = $this->client->post($this->endpoint, [
+            'headers' => [
+                'Authorization' => 'Bearer ' . $this->apiKey,
+                'Accept' => 'application/json',
+                'Content-Type' => 'application/json',
+            ],
+            'json' => [
+                'to' => $phoneNumber,
+                'from' => $this->senderName,
+                'message' => $message,
+            ]
+        ]);
+        
+        $result = json_decode($response->getBody(), true);
+        
+        Log::info('SMS sent successfully via UniSMS', [
+            'phone' => $phoneNumber,
+            'response' => $result
+        ]);
+        
+        return true;
+    }
+    
+    /**
+     * Send SMS via Semaphore API
+     */
+    protected function sendViaSemaphore(string $phoneNumber, string $message): bool
+    {
+        $response = $this->client->post($this->endpoint, [
+            'headers' => [
+                'Accept' => 'application/json',
+                'Content-Type' => 'application/x-www-form-urlencoded',
+            ],
+            'form_params' => [
+                'apikey' => $this->apiKey,
+                'number' => $phoneNumber,
+                'message' => $message,
+                'sendername' => $this->senderName,
+            ]
+        ]);
+        
+        $result = json_decode($response->getBody(), true);
+        
+        Log::info('SMS sent successfully via Semaphore', [
+            'phone' => $phoneNumber,
+            'response' => $result
+        ]);
+        
+        return true;
+    }
+    
+    /**
+     * Send SMS via PhilSMS API
+     */
+    protected function sendViaPhilSMS(string $phoneNumber, string $message): bool
+    {
+        $response = $this->client->post($this->endpoint, [
+            'headers' => [
+                'Authorization' => 'Bearer ' . $this->apiKey,
+                'Accept' => 'application/json',
+                'Content-Type' => 'application/json',
+            ],
+            'json' => [
+                'recipient' => $phoneNumber,
+                'sender_id' => $this->senderName,
+                'type' => 'plain',
+                'message' => $message,
+            ]
+        ]);
+        
+        $result = json_decode($response->getBody(), true);
+        
+        Log::info('SMS sent successfully via PhilSMS', [
+            'phone' => $phoneNumber,
+            'response' => $result
+        ]);
+        
+        return true;
     }
     
     /**

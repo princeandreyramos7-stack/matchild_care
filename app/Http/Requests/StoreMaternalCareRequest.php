@@ -27,6 +27,7 @@ class StoreMaternalCareRequest extends FormRequest
             'first_name' => 'required|string|max:255',
             'middle_initial' => 'nullable|string|max:2',
             'address' => 'required|string|max:500',
+            'phone_number' => ['required', 'string', 'max:15', 'regex:/^(09|\+639)[0-9]{9}$/'],
             'age' => 'required|integer|min:10|max:49',
             'age_group' => 'required|string|in:10-14,15-19,20-49',
             
@@ -86,6 +87,8 @@ class StoreMaternalCareRequest extends FormRequest
             'age_group.in' => 'Invalid age group selected.',
             'gravida.min' => 'Gravida must be at least 1.',
             'parity.min' => 'Parity cannot be negative.',
+            'phone_number.required' => 'Phone number is required.',
+            'phone_number.regex' => 'Phone number must be a valid Philippine mobile number (e.g., 09123456789 or +639123456789).',
         ];
     }
 }

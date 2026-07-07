@@ -68,6 +68,7 @@ class MaternalCareController extends Controller
             'first_name' => $maternalRecord->first_name,
             'middle_initial' => $maternalRecord->middle_initial,
             'address' => $maternalRecord->address,
+            'phone_number' => $maternalRecord->phone_number,
             'age' => $maternalRecord->age,
             'age_group' => $maternalRecord->age_group,
             'last_menstrual_period' => $formatDate($maternalRecord->last_menstrual_period),

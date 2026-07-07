@@ -34,6 +34,7 @@ export default function MaternalCare({
         first_name: record?.first_name || "",
         middle_initial: record?.middle_initial || "",
         address: record?.address || "",
+        phone_number: record?.phone_number || "",
         age: record?.age || "",
         age_group: record?.age_group || "",
 

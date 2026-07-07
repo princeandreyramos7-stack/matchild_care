@@ -36,9 +36,9 @@ return [
     ],
 
     'sms' => [
-        'provider' => env('SMS_PROVIDER', 'philsms'),
+        'provider' => env('SMS_PROVIDER', 'unisms'),
         'api_key' => env('SMS_API_KEY'),
-        'endpoint' => env('SMS_API_ENDPOINT', 'https://app.philsms.com/api/v3/sms/send'),
+        'endpoint' => env('SMS_API_ENDPOINT', 'https://api.unisms.com/v1/sms/send'),
         'sender_name' => env('SMS_SENDER_NAME', 'HealthCenter'),
         'enabled' => env('SMS_ENABLED', false),
         'send_appointment_reminders' => env('SMS_SEND_APPOINTMENT_REMINDERS', true),

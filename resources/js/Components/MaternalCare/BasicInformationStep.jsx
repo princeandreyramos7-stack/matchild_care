@@ -147,22 +147,54 @@ function BasicInformationStep({ data, setData, errors, isEdit = false }) {
                         </svg>
                     </div>
                     <div className="flex-1 min-w-0">
-                        <h4 className="text-base font-bold text-gray-900 truncate">Address Information</h4>
-                        <p className="text-xs text-gray-500 truncate">Current residential address</p>
+                        <h4 className="text-base font-bold text-gray-900 truncate">Contact Information</h4>
+                        <p className="text-xs text-gray-500 truncate">Address and phone number</p>
                     </div>
                 </div>
                 
-                <div className="flex-1">
-                    <InputLabel htmlFor="address" value="Complete Address" required />
-                    <TextInput
-                        id="address"
-                        type="text"
-                        value={data.address}
-                        onChange={(e) => setData('address', e.target.value)}
-                        placeholder="Street, Barangay, City, Province"
-                        required
-                    />
-                    <InputError message={errors.address} className="mt-2" />
+                <div className="space-y-4 flex-1">
+                    <div>
+                        <InputLabel htmlFor="address" value="Complete Address" required />
+                        <TextInput
+                            id="address"
+                            type="text"
+                            value={data.address}
+                            onChange={(e) => setData('address', e.target.value)}
+                            placeholder="Street, Barangay, City, Province"
+                            required
+                        />
+                        <InputError message={errors.address} className="mt-2" />
+                    </div>
+
+                    <div>
+                        <InputLabel htmlFor="phone_number" value="Phone Number" required />
+                        <div className="relative">
+                            <TextInput
+                                id="phone_number"
+                                type="tel"
+                                value={data.phone_number}
+                                onChange={(e) => {
+                                    const value = e.target.value.replace(/[^0-9+]/g, '');
+                                    setData('phone_number', value);
+                                }}
+                                placeholder="09123456789"
+                                maxLength="13"
+                                required
+                            />
+                            <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none">
+                                <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                                </svg>
+                            </div>
+                        </div>
+                        <p className="mt-2 text-xs text-gray-500 flex items-center gap-1.5">
+                            <svg className="w-3.5 h-3.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            <span>Format: 09XXXXXXXXX or +639XXXXXXXXX</span>
+                        </p>
+                        <InputError message={errors.phone_number} className="mt-2" />
+                    </div>
                 </div>
             </div>
 
