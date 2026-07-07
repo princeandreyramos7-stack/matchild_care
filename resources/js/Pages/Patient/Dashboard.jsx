@@ -6,6 +6,7 @@ import { useState } from 'react';
 export default function Dashboard({ maternalRecord }) {
     const [expandedTip, setExpandedTip] = useState(null);
     const [expandedArticle, setExpandedArticle] = useState(null);
+    const [selectedVideo, setSelectedVideo] = useState(null);
 
     const toggleTip = (index) => {
         setExpandedTip(expandedTip === index ? null : index);
@@ -15,48 +16,56 @@ export default function Dashboard({ maternalRecord }) {
         setExpandedArticle(expandedArticle === index ? null : index);
     };
 
-    // Video Tutorials
+    const openVideo = (video) => {
+        setSelectedVideo(video);
+    };
+
+    const closeVideo = () => {
+        setSelectedVideo(null);
+    };
+
+    // Video Tutorials - Updated with verified working videos
     const videoTutorials = [
         {
-            title: "Pregnancy Health and Nutrition",
-            description: "Essential nutrition tips for a healthy pregnancy journey",
-            youtubeId: "9C_HReR_McQ",
-            duration: "10:30",
+            title: "Pregnancy Nutrition Guide",
+            description: "Essential nutrition and healthy eating during pregnancy",
+            youtubeId: "wo2YBlroRRw",
+            duration: "8:45",
             category: "Nutrition"
         },
         {
-            title: "Prenatal Care: What to Expect",
-            description: "Complete guide to prenatal checkups and medical care",
-            youtubeId: "yPUUj4CZYCU",
-            duration: "15:45",
+            title: "Prenatal Care Basics",
+            description: "What to expect during prenatal checkups",
+            youtubeId: "wt9-6VWbfHI",
+            duration: "10:15",
             category: "Prenatal Care"
         },
         {
-            title: "Safe Exercise During Pregnancy",
-            description: "Safe and effective exercises for expecting mothers",
-            youtubeId: "3bRH8HTfeUQ",
-            duration: "12:20",
+            title: "Safe Pregnancy Exercises",
+            description: "Safe exercises and stretches for pregnant women",
+            youtubeId: "4BOTvaRaDjI",
+            duration: "12:30",
             category: "Exercise"
         },
         {
-            title: "Preparing for Labor and Delivery",
-            description: "Everything you need to know about childbirth",
+            title: "Labor and Delivery Guide",
+            description: "Preparing for labor, delivery, and what to expect",
             youtubeId: "j7YucfJuziU",
-            duration: "18:15",
+            duration: "15:20",
             category: "Labor"
         },
         {
-            title: "Postpartum Care Essentials",
-            description: "Taking care of yourself after delivery",
-            youtubeId: "LQVW_L2rViE",
-            duration: "14:30",
+            title: "Postpartum Recovery",
+            description: "Taking care of yourself after giving birth",
+            youtubeId: "EeRzmP84H_I",
+            duration: "11:40",
             category: "Postpartum"
         },
         {
-            title: "Breastfeeding Basics",
-            description: "Complete guide to successful breastfeeding",
-            youtubeId: "1k04uxmVzwU",
-            duration: "16:40",
+            title: "Breastfeeding Tips",
+            description: "Getting started with breastfeeding your newborn",
+            youtubeId: "a8pTFnVZFQs",
+            duration: "14:25",
             category: "Breastfeeding"
         }
     ];
@@ -546,11 +555,9 @@ export default function Dashboard({ maternalRecord }) {
                                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                                     {videoTutorials.map((video, index) => (
                                         <div key={index} className="group bg-white rounded-xl overflow-hidden border-2 border-indigo-100 hover:border-indigo-300 hover:shadow-xl transition-all">
-                                            <a 
-                                                href={`https://www.youtube.com/watch?v=${video.youtubeId}`}
-                                                target="_blank"
-                                                rel="noopener noreferrer"
-                                                className="block"
+                                            <button
+                                                onClick={() => openVideo(video)}
+                                                className="block w-full text-left"
                                             >
                                                 {/* Video Thumbnail */}
                                                 <div className="relative aspect-video bg-gray-200 overflow-hidden">
@@ -583,12 +590,23 @@ export default function Dashboard({ maternalRecord }) {
                                                     <p className="text-xs text-gray-600 line-clamp-2 mb-3">
                                                         {video.description}
                                                     </p>
-                                                    <div className="flex items-center text-indigo-600 text-xs font-semibold">
-                                                        <span>Watch on YouTube</span>
-                                                        <ExternalLink className="h-3 w-3 ml-1" />
+                                                    <div className="flex items-center justify-between">
+                                                        <div className="flex items-center text-indigo-600 text-xs font-semibold">
+                                                            <span>Play Video</span>
+                                                            <Play className="h-3 w-3 ml-1 fill-current" />
+                                                        </div>
+                                                        <a
+                                                            href={`https://www.youtube.com/watch?v=${video.youtubeId}`}
+                                                            target="_blank"
+                                                            rel="noopener noreferrer"
+                                                            onClick={(e) => e.stopPropagation()}
+                                                            className="flex items-center text-gray-500 hover:text-indigo-600 text-xs font-medium transition-colors"
+                                                        >
+                                                            <ExternalLink className="h-3 w-3" />
+                                                        </a>
                                                     </div>
                                                 </div>
-                                            </a>
+                                            </button>
                                         </div>
                                     ))}
                                 </div>
@@ -872,6 +890,60 @@ export default function Dashboard({ maternalRecord }) {
                     </div>
                 </div>
             </div>
+
+            {/* Video Modal */}
+            {selectedVideo && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm" onClick={closeVideo}>
+                    <div className="relative w-full max-w-5xl bg-white rounded-2xl shadow-2xl overflow-hidden" onClick={(e) => e.stopPropagation()}>
+                        {/* Modal Header */}
+                        <div className="bg-gradient-to-r from-indigo-500 to-indigo-600 px-6 py-4 flex items-center justify-between">
+                            <div>
+                                <h3 className="text-xl font-bold text-white">{selectedVideo.title}</h3>
+                                <p className="text-indigo-100 text-sm mt-1">{selectedVideo.description}</p>
+                            </div>
+                            <button
+                                onClick={closeVideo}
+                                className="text-white hover:text-gray-200 transition-colors p-2 hover:bg-white/10 rounded-lg"
+                            >
+                                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                </svg>
+                            </button>
+                        </div>
+
+                        {/* Video Player */}
+                        <div className="aspect-video bg-black">
+                            <iframe
+                                src={`https://www.youtube.com/embed/${selectedVideo.youtubeId}?autoplay=1&rel=0`}
+                                title={selectedVideo.title}
+                                className="w-full h-full"
+                                frameBorder="0"
+                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                allowFullScreen
+                            ></iframe>
+                        </div>
+
+                        {/* Modal Footer */}
+                        <div className="px-6 py-4 bg-gray-50 flex items-center justify-between">
+                            <div className="flex items-center gap-3">
+                                <span className="bg-indigo-100 text-indigo-700 text-xs font-semibold px-3 py-1 rounded-full">
+                                    {selectedVideo.category}
+                                </span>
+                                <span className="text-sm text-gray-600">{selectedVideo.duration}</span>
+                            </div>
+                            <a
+                                href={`https://www.youtube.com/watch?v=${selectedVideo.youtubeId}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="flex items-center gap-2 text-sm text-indigo-600 hover:text-indigo-700 font-medium transition-colors"
+                            >
+                                <span>Open in YouTube</span>
+                                <ExternalLink className="h-4 w-4" />
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            )}
         </PatientLayout>
     );
 }
