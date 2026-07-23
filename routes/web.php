@@ -4,6 +4,7 @@ use App\Http\Controllers\ChildImmunizationController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\MaternalCareController;
 use App\Http\Controllers\PatientController;
+use App\Http\Controllers\SmsTestController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -89,6 +90,16 @@ Route::middleware('auth')->group(function () {
 
 });
 
+// SMS Testing Routes (Remove in production or protect with admin middleware)
+Route::middleware('auth')->prefix('sms-test')->name('sms-test.')->group(function () {
+    Route::get('/', [SmsTestController::class, 'index'])->name('index');
+    Route::post('/basic', [SmsTestController::class, 'sendBasicTest'])->name('basic');
+    Route::post('/appointment', [SmsTestController::class, 'sendAppointmentTest'])->name('appointment');
+    Route::post('/visit', [SmsTestController::class, 'sendVisitTest'])->name('visit');
+    Route::post('/credentials', [SmsTestController::class, 'sendCredentialsTest'])->name('credentials');
+    Route::post('/send-to-patient', [SmsTestController::class, 'sendToPatient'])->name('send-to-patient');
+});
+
 // SMS Test Route (Remove in production)
 Route::get('/test-sms', function () {
     try {
@@ -96,7 +107,7 @@ Route::get('/test-sms', function () {
         
         // Replace with your actual phone number for testing
         $testNumber = '09707112132'; // CHANGE THIS TO YOUR NUMBER
-        $result = $sms->send($testNumber, 'Test message from Maternal Care System! This is working! 📱');
+        $result = $sms->send($testNumber, 'Test message from Maternal Care System powered by Matcare! 📱');
         
         if ($result) {
             return response()->json([

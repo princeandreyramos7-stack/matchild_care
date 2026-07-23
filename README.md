@@ -94,14 +94,41 @@ php artisan serve
 
 ## SMS Configuration
 
-For SMS notification setup, see `docs/SMS_READY_TO_USE.md`
+### Current Provider: Semaphore
+The system is configured to use Semaphore SMS API with sender name "Matcare".
+
+**SMS Features:**
+- ✅ Login credentials sent on patient registration
+- ✅ Appointment reminders (7 days after registration, 4 weeks after visits)
+- ✅ Visit completion notifications
+
+**Quick Test:**
+```bash
+php artisan sms:test 09123456789
+```
+
+**Documentation:** See [docs/SMS_DOCUMENTATION_INDEX.md](docs/SMS_DOCUMENTATION_INDEX.md) for complete SMS documentation.
+
+**Quick Start:** See [docs/SMS_QUICK_REFERENCE.md](docs/SMS_QUICK_REFERENCE.md) for commands and reference.
 
 ## Documentation
 
-Additional documentation can be found in the `/docs` folder:
+All documentation is organized in the `/docs` folder:
+
+### SMS Documentation (Start Here!)
+- **[SMS_DOCUMENTATION_INDEX.md](docs/SMS_DOCUMENTATION_INDEX.md)** - Master SMS documentation index
+- **[SMS_QUICK_REFERENCE.md](docs/SMS_QUICK_REFERENCE.md)** - Quick reference card
+- **[SMS_WORKFLOW_SUMMARY.md](docs/SMS_WORKFLOW_SUMMARY.md)** - System overview
+
+### Setup Guides
+- **[SEMAPHORE_SETUP_GUIDE.md](docs/SEMAPHORE_SETUP_GUIDE.md)** - Current SMS provider setup
+- **[SMS_TESTING_QUICKSTART.md](docs/SMS_TESTING_QUICKSTART.md)** - Quick testing guide
+- **[COMPLETE_SMS_WORKFLOW_GUIDE.md](docs/COMPLETE_SMS_WORKFLOW_GUIDE.md)** - Detailed workflow
+
+### Other Documentation
 - Complete Project Summary
 - SMS Implementation Guide
-- PhilSMS Setup Instructions
+- Alternative SMS Provider Setup (UniSMS, PhilSMS)
 
 ## License
 

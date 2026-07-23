@@ -47,21 +47,32 @@ class PatientAccountService
             ]);
             
             // Send SMS with login credentials if phone number available
-            if ($maternalRecord->contact_number) {
+            if ($maternalRecord->phone_number) {
                 try {
                     $smsService = new \App\Services\SmsService();
-                    $smsService->sendCredentials($maternalRecord->contact_number, [
+                    $smsService->sendCredentials($maternalRecord->phone_number, [
                         'patient_name' => $maternalRecord->first_name,
                         'username' => $username,
                         'password' => $defaultPassword,
                         'login_url' => config('app.url') . '/login',
                     ]);
+                    
+                    \Log::info('SMS credentials sent to new patient', [
+                        'family_serial' => $maternalRecord->family_serial,
+                        'phone' => $maternalRecord->phone_number,
+                        'username' => $username,
+                    ]);
                 } catch (\Exception $e) {
                     \Log::warning('Failed to send SMS credentials', [
                         'family_serial' => $maternalRecord->family_serial,
+                        'phone' => $maternalRecord->phone_number,
                         'error' => $e->getMessage()
                     ]);
                 }
+            } else {
+                \Log::warning('No phone number provided for new patient', [
+                    'family_serial' => $maternalRecord->family_serial,
+                ]);
             }
         }
         

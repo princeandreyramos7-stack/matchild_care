@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreMaternalCareRequest;
 use App\Services\MaternalCareService;
 use App\Services\PatientAccountService;
+use App\Services\SmsService;
 use App\Models\MaternalRecord;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Log;
@@ -221,6 +222,63 @@ class MaternalCareController extends Controller
                 'family_serial' => $maternalRecord->family_serial,
             ]);
 
+            // Send visit notification and next appointment reminder SMS if phone number is available
+            $prenatalVisits = $request->input('prenatal_visits', []);
+            $completedVisits = array_filter($prenatalVisits, function($visit) {
+                return !empty($visit['visit_date']);
+            });
+
+            if ($maternalRecord->phone_number && count($completedVisits) > 0) {
+                $smsService = new SmsService();
+                $latestVisit = end($completedVisits);
+                
+                // Calculate next visit (4 weeks from last visit)
+                $nextVisitDate = \Carbon\Carbon::parse($latestVisit['visit_date'])
+                    ->addWeeks(4)
+                    ->format('F d, Y');
+                
+                // 1. Send visit completion notification
+                try {
+                    $smsService->sendVisitNotification($maternalRecord->phone_number, [
+                        'patient_name' => $maternalRecord->first_name,
+                        'visit_number' => $latestVisit['visit_number'],
+                        'next_visit_date' => $nextVisitDate,
+                    ]);
+                    
+                    Log::info('Visit notification SMS sent', [
+                        'maternal_record_id' => $maternalRecord->id,
+                        'phone' => $maternalRecord->phone_number,
+                        'visit_number' => $latestVisit['visit_number'],
+                    ]);
+                } catch (\Exception $e) {
+                    Log::warning('Failed to send visit notification SMS', [
+                        'error' => $e->getMessage(),
+                        'maternal_record_id' => $maternalRecord->id,
+                    ]);
+                }
+                
+                // 2. Send appointment reminder for NEXT checkup
+                try {
+                    $smsService->sendAppointmentReminder($maternalRecord->phone_number, [
+                        'patient_name' => $maternalRecord->first_name,
+                        'appointment_date' => $nextVisitDate,
+                        'appointment_time' => '9:00 AM',
+                    ]);
+                    
+                    Log::info('Next appointment reminder SMS sent after visit', [
+                        'maternal_record_id' => $maternalRecord->id,
+                        'phone' => $maternalRecord->phone_number,
+                        'visit_number' => $latestVisit['visit_number'],
+                        'next_appointment' => $nextVisitDate,
+                    ]);
+                } catch (\Exception $e) {
+                    Log::warning('Failed to send next appointment reminder SMS', [
+                        'error' => $e->getMessage(),
+                        'maternal_record_id' => $maternalRecord->id,
+                    ]);
+                }
+            }
+
             return redirect()
                 ->route('dashboard')
                 ->with('success', 'Maternal care record updated successfully.');
@@ -294,9 +352,47 @@ class MaternalCareController extends Controller
                 'username' => $patientUser->username,
             ]);
 
+            // Send SMS notifications if phone number is available
+            if ($maternalRecord->phone_number) {
+                $smsService = new SmsService();
+                
+                // 1. Send appointment reminder for first checkup
+                try {
+                    $nextAppointmentDate = now()->addDays(7)->format('F d, Y');
+                    
+                    $smsService->sendAppointmentReminder($maternalRecord->phone_number, [
+                        'patient_name' => $maternalRecord->first_name,
+                        'appointment_date' => $nextAppointmentDate,
+                        'appointment_time' => '9:00 AM',
+                    ]);
+                    
+                    Log::info('First appointment reminder SMS sent to new patient', [
+                        'maternal_record_id' => $maternalRecord->id,
+                        'phone' => $maternalRecord->phone_number,
+                        'appointment_date' => $nextAppointmentDate,
+                    ]);
+                } catch (\Exception $e) {
+                    Log::warning('Failed to send appointment reminder SMS to new patient', [
+                        'error' => $e->getMessage(),
+                        'maternal_record_id' => $maternalRecord->id,
+                    ]);
+                }
+                
+                // Note: Login credentials SMS is already sent by PatientAccountService::createPatientAccount()
+                Log::info('SMS notifications process completed for new patient', [
+                    'maternal_record_id' => $maternalRecord->id,
+                    'phone' => $maternalRecord->phone_number,
+                ]);
+            } else {
+                Log::warning('No phone number provided for new patient - SMS notifications skipped', [
+                    'maternal_record_id' => $maternalRecord->id,
+                    'family_serial' => $maternalRecord->family_serial,
+                ]);
+            }
+
             return redirect()
                 ->route('parent.maternal-care')
-                ->with('success', "Maternal care record created successfully. Patient login: {$patientUser->username} / Password: {$defaultPassword}");
+                ->with('success', "Maternal care record created successfully. Patient login: {$patientUser->username} / Password: {$defaultPassword}. SMS notifications sent to {$maternalRecord->phone_number}.");
 
         } catch (\Exception $e) {
             Log::error('Failed to create maternal care record', [
